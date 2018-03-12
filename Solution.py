@@ -1,0 +1,13 @@
+class Solution:
+    def __init__(self,basic):
+        # Basic data
+        self.Courses = int(basic[1][0])
+        self.rooms = int(basic[1][1])
+        self.days = int(basic[1][2])
+        self.Periods_per_day = int(basic[1][3])
+        self.Curricula = int(basic[1][4])
+        self.constraints = int(basic[1][5])
+        self.lecturers = int(basic[1][6])
+
+        # Solution matrix
+        self.sol = {(days, period):None for period in range(self.Periods_per_day) for days in range(self.days )}
