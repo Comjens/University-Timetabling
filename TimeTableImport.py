@@ -74,4 +74,4 @@ print(data)
 Set_params(data)
 
 
-print(data.C_q)
+print(data.sol)

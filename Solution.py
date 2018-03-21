@@ -20,4 +20,4 @@ class Solution:
 
         # Solution matrix
         #self.sol = {(days, period):None for period in range(self.Periods_per_day) for days in range(self.days )}
-        self.sol={Course:[] for Course in range(self.Courses)}
+        self.sol={Course:[None for i in range()] for Course in range(self.Courses)}

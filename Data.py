@@ -34,6 +34,10 @@ class Data:
         self.lecturers_max = int(self.basic[1][6])
         self.total_timeslots = self.days_max * self.Periods_per_day
 
+        # Solution matrix
+        # self.sol = {(days, period):None for period in range(self.Periods_per_day) for days in range(self.days )}
+        self.sol = {Course: [None for i in range(int(self.courses[Course+1][2]))] for Course in range(self.Courses_max)}
+
     def set_C_q(self,C_q):
         assert isinstance(C_q, list)
         self.C_q = C_q
