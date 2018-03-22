@@ -5,14 +5,11 @@ from Data import *
 
 
 
-
 def file_names(DIR):
     files = [name for name in os.listdir(DIR) if os.path.isfile(os.path.join(DIR, name))]
     return  sorted(files, key=str.lower)
 
-DIR = "data/Test01/"
-files = file_names(DIR)
-#print(files)
+
 def read_file(files):
     data = {}
     for i in files:
@@ -23,10 +20,6 @@ def read_file(files):
         data[i[:-4]]= temp
     print(data)
     return data
-
-data= read_file(files)
-print(data.keys())
-
 
 def Set_params(data):
 
@@ -63,6 +56,13 @@ def Set_params(data):
     data.set_M_c(M_c)
     data.set_F_ct(F_ct)
 
+
+
+DIR = "data/Test01/"
+files = file_names(DIR)
+#print(files)
+data= read_file(files)
+print(data.keys())
 
 
 
