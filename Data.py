@@ -35,10 +35,10 @@ class Data:
         self.total_timeslots = self.days_max * self.Periods_per_day
 
         # Solution matrix
-        self.timetable = {(days, period, room):None
+        self.timetable = {(course, timeslot, room):None
                           for room in range(self.rooms_max)
-                          for period in range(self.Periods_per_day)
-                          for days in range(self.days )}
+                          for timeslot in range(self.total_timeslots)
+                          for course in range(self.Courses_max )}
         self.sol = {Course: [None for i in range(int(self.courses[Course+1][2]))]
                     for Course in range(self.Courses_max)}
 
