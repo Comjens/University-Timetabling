@@ -35,8 +35,12 @@ class Data:
         self.total_timeslots = self.days_max * self.Periods_per_day
 
         # Solution matrix
-        # self.sol = {(days, period):None for period in range(self.Periods_per_day) for days in range(self.days )}
-        self.sol = {Course: [None for i in range(int(self.courses[Course+1][2]))] for Course in range(self.Courses_max)}
+        self.timetable = {(days, period, room):None
+                          for room in range(self.rooms_max)
+                          for period in range(self.Periods_per_day)
+                          for days in range(self.days )}
+        self.sol = {Course: [None for i in range(int(self.courses[Course+1][2]))]
+                    for Course in range(self.Courses_max)}
 
     def set_C_q(self,C_q):
         assert isinstance(C_q, list)

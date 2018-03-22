@@ -19,5 +19,5 @@ class Solution:
         self.total_timeslots = self.days*self.Periods_per_day
 
         # Solution matrix
-        #self.sol = {(days, period):None for period in range(self.Periods_per_day) for days in range(self.days )}
+        #self.timetable = {(days, period, room):None for period in range(self.Periods_per_day) for days in range(self.days )}
         self.sol={Course:[None for i in range()] for Course in range(self.Courses)}
