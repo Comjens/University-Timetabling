@@ -1,5 +1,4 @@
-from Taboolist import Taboo
-
+from Taboolist import Taboo, Qua
 class Data:
     Courses_max = None
     rooms_max = None
@@ -50,6 +49,7 @@ class Data:
         self.sol = {Course: [(None, None) for i in range(int(self.courses[Course+1][2]))]
                     for Course in range(self.Courses_max)}
         self.tab = Taboo(20)
+        self.qua = Qua(30)
         
 
     def set_T_tt(self,T_tt):

@@ -10,7 +10,7 @@ def file_names(DIR):
 def read_file(files):
     data = {}
     for i in files:
-        with open("C:/Users/james.david/Desktop/Research/02_Denmark/01_DTU - Industrial Engineering Management/Semesters/Winter 2018/42137 - Optimization using Metaheuristics/00_Project/Test Data/Test01/"+i) as infile:
+        with open("data/Test02/" + i) as infile:
             RAW = infile.readlines()
         temp = [j.rsplit() for j in RAW]
         data[i[:-4]]= temp

@@ -21,3 +21,27 @@ class Taboo:
     
     def CheckTab(self,place):
        return place in self.TL
+
+
+class Qua:
+    QL = []
+    IL = []
+
+    def __init__(self, a):
+        self.a = a
+
+    def RemQua(self, place1, place2):
+        self.QL.remove(place1)
+        self.IL.remove(place2)
+
+
+class Suc:
+    SL = []
+    ItL = []
+
+    def __init__(self, a):
+        self.a = a
+
+    def RemSuc(self, place):
+        self.SL.remove(place)
+        self.ItL.remove(place)

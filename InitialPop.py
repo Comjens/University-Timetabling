@@ -25,7 +25,7 @@ def InitPop(sol, timetable, Courses_max, rooms_max, total_timeslots,data):
         for i, j in enumerate(sol[c1]):
             if j == (None,None):
                 np_indexlist.append(i)
-                CountNP = CountNP + 1;
+                CountNP = CountNP + 1
         
         if CountNP == 0:
             'If there are no unscheduled entries, we have no reason to revisit this course for now'

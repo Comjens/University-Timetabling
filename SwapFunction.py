@@ -1,4 +1,4 @@
-def swap(sol, timetable, Obj, Courses_max, total_timeslots, rooms_max, F_ct, chi,data):
+def swap(sol, timetable, Obj, Courses_max, total_timeslots, rooms_max, F_ct, chi, data, Iter):
     import random
     from FeasibilityCheck import Feasibility_Check
     from itertools import product
@@ -8,9 +8,30 @@ def swap(sol, timetable, Obj, Courses_max, total_timeslots, rooms_max, F_ct, chi
     'Loop until a successful swap can be achieved'
     Successful = False
     Optimum = False
+    # parameter that states after how many iterations we can remove a number from the quarantine list
+    Gamma = 15
+    Sigma = 9
     c1list = list(range(0, Courses_max))
-    
+    QL = data.qua.QL
+    IL = data.qua.IL
+    # print('c1',c1list)
+    print(QL, IL)
+    k = len(IL) - 1
+    while k >= 0:
+        if IL[k] == Iter:
+            data.qua.RemQua(QL[k], IL[k])
+            c1list.append(QL[k])
+        else:
+            if c1list.__contains__(QL[k]):
+                del c1list[c1list.index(QL[k])]
+            else:
+                print("Was this picked from c2?", QL[k])
+
+        k = k - 1
+    # print('updatedListq',QL,'\ni:',IL)
+    # print(c1list)
     while Successful == False:
+        print('Quarantine list', data.qua.QL)
         "If no moves exist that would allow the objective to increase for any c1, we're at an optimum"
         if len(c1list) == 0:
             Optimum = True
@@ -40,6 +61,10 @@ def swap(sol, timetable, Obj, Courses_max, total_timeslots, rooms_max, F_ct, chi
         while Successful == False:
             'If the list is empty, then there exist no beneficial moves for c1, choose a new c1'
             if len(c2list) == 0:
+                data.qua.QL.append(c1)
+                data.qua.IL.append(Iter + Gamma)
+                print('We are putting', c1, 'in quarantine because it is hard to move it', data.qua.QL)
+                # print('newc1',c1list)
                 break
             
             'Choose a course from the list of possible swaps, then remove it to prevent repeat iterations'
@@ -56,10 +81,10 @@ def swap(sol, timetable, Obj, Courses_max, total_timeslots, rooms_max, F_ct, chi
             for i, j in enumerate(sol[c2]):
                 if j != (None,None):
                     pop_list.append(i)
-                    CountP = CountP + 1;
+                    CountP = CountP + 1
                 else:
                     np_list.append(i)
-                    CountNP = CountNP + 1;
+                    CountNP = CountNP + 1
             
             while (len(pop_list) != 0 or len(np_list) != 0) and Successful != True:
                 'Call the dictionary for c2 and randomly select the sub-dict to use from the populated entries'        
@@ -69,8 +94,8 @@ def swap(sol, timetable, Obj, Courses_max, total_timeslots, rooms_max, F_ct, chi
                     t2, r2 = sol[c2][c2_index]
                     
                     c2Null = False
-                    
-                    del pop_list[pop_index];
+
+                    del pop_list[pop_index]
                     
                 elif len(pop_list) == 0 and len(np_list) != 0:
                     '''If both sol[c1_index] and sol[c2_index] are null entries in sol, find a new c2_index.
@@ -126,7 +151,13 @@ def swap(sol, timetable, Obj, Courses_max, total_timeslots, rooms_max, F_ct, chi
                                 Successful = True
                                 print("CASE 1: Swap\nNew obj = ", ProvObj)
                                 print("Previous obj = ", Obj)
-                                
+                                data.qua.QL.append(c1)
+                                data.qua.IL.append(Iter + Sigma)
+                                data.qua.QL.append(c2)
+                                data.qua.IL.append(Iter + Sigma)
+                                print('We are putting', c1, c2, 'in quarantine because they have just been moved',
+                                      data.qua.QL, data.qua.IL)
+                                #print('newc1',c1list)
                                 break
                          
                 elif c1Null == True and c2Null == False:
@@ -157,7 +188,11 @@ def swap(sol, timetable, Obj, Courses_max, total_timeslots, rooms_max, F_ct, chi
                                     Successful = True
                                     print("CASE 2: Add\nNew obj = ", ProvObj)
                                     print("Previous obj = ", Obj)
-                                    
+                                    data.qua.QL.append(c1)
+                                    data.qua.IL.append(Iter + Sigma)
+                                    print('We are putting', c1, 'in quarantine because it has just been moved',
+                                          data.qua.QL)
+
                                     break
                 else:
                     'CASE 3: sol[c1_index] is non-null and sol[c2_index] is unscheduled --> drop c1'
@@ -177,6 +212,9 @@ def swap(sol, timetable, Obj, Courses_max, total_timeslots, rooms_max, F_ct, chi
                         Successful = True
                         print("CASE 3: Drop\nNew obj = ", ProvObj)
                         print("Previous obj = ", Obj)
+                        # data.qua.QL.append(c1)
+                        # data.qua.IL.append(Iter+Sigma)
+                        #????????????????????????????????
                         break                
                         
     #Cases
@@ -186,7 +224,7 @@ def swap(sol, timetable, Obj, Courses_max, total_timeslots, rooms_max, F_ct, chi
     #4) Neither are scheduled --> not permitted, handled earlier in the code
 
     if Successful == True:
-        print(" (c1, t1, r1) = ", c1,", ", t1,", ", r1, "\n", "(c2, t2, r2) = ", c2, ", ", t2,\
+        print(" (c1, t1, r1) = ", c1, ", ", t1, ", ", r1, "\n", "(c2, t2, r2) = ", c2, ", ", t2,
               ", ", r2)
     
         'CASE 1: Both sol[c1_index] and sol[c2_index] entries are non-null --> swap'
@@ -217,8 +255,5 @@ def swap(sol, timetable, Obj, Courses_max, total_timeslots, rooms_max, F_ct, chi
             data.tab.AddTab((c1, t1, r1))
         
     return Optimum
-          
-    
-                
-    
-    
+
+# ciao = swap(data.sol, data.timetable, CurrentObj, data.Courses_max, data.total_timeslots, data.rooms_max, data.F_ct, data.Chi_cc,data)
