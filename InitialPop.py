@@ -44,7 +44,7 @@ def InitPop(sol, timetable, Courses_max, rooms_max, total_timeslots,data):
         if CountNP == 0:
             # If there are no unscheduled entries, we have no reason to revisit this course for now
             del Sorted_list_c[-1]
-            # del courses[courses_index]
+            #del courses[courses_index]
 
         else:
             #Randomly select one of these non-scheduled entries to work with, then delete this index from np_indexlist
