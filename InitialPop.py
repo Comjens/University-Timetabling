@@ -9,14 +9,23 @@ def InitPop(sol, timetable, Courses_max, rooms_max, total_timeslots,data):
     import random
     from itertools import product
     from FeasibilityCheck import Feasibility_Check
+
     
     Placements = 0
     courses = list(range(0, Courses_max))
-    
-    while Placements <= 0.98 * sum([len(sol[i]) for i in sol]): 
+
+    MinCriteria = min(data.rooms_max * data.total_timeslots, sum([len(sol[i]) for i in sol]))
+
+    while Placements < data.params['Initiate'] * MinCriteria:
     
         'Define the initial entry'
-        courses_index = random.randint(0, len(courses)-1)
+        try:
+            courses_index = random.randint(0, len(courses) - 1)
+        except ValueError:
+            print(
+                "Could not attain the desired initial placements - the algorithm will continue at {:.5}% of the desired level".format(
+                    100 * Placements / (data.params['Initiate'] * MinCriteria)))
+            break
         c1 = courses[courses_index]
         
         'Assemble the list of indices corresponding to non-populated entries in the solution dictionary'
@@ -25,7 +34,7 @@ def InitPop(sol, timetable, Courses_max, rooms_max, total_timeslots,data):
         for i, j in enumerate(sol[c1]):
             if j == (None,None):
                 np_indexlist.append(i)
-                CountNP = CountNP + 1
+                CountNP = CountNP + 1;
         
         if CountNP == 0:
             'If there are no unscheduled entries, we have no reason to revisit this course for now'

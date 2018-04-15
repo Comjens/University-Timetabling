@@ -5,12 +5,11 @@ def file_names(DIR):
     return  sorted(files, key=str.lower)
 
 
-
 #print(files)
-def read_file(files):
+def read_file(DIR, files):
     data = {}
     for i in files:
-        with open("data/Test02/" + i) as infile:
+        with open(DIR + i) as infile:
             RAW = infile.readlines()
         temp = [j.rsplit() for j in RAW]
         data[i[:-4]]= temp

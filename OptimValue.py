@@ -13,7 +13,7 @@ def Set_obj(data,timetable):
     #first oenality term how many working day less then the desiderable the lectures are distributed over
     Workingdays_c = [0 for i in range(data.Courses_max)]
     for i in range(data.Courses_max):
-        a = 0
+        a = 0;
         for d in range(data.days_max):
             if (sum ( timetable[(i,t,r)] for r in range(data.rooms_max) for t in data.T_d[d]) >=1):
                 a=a+1
@@ -53,10 +53,12 @@ def Set_obj(data,timetable):
         P_c[c] = max(0,RO[r])
     data.set_P_c(P_c)
 
-    obj = sum(5 * Workingdays_c[c] + 10 * Unplanned_c[c] + P_c[c] for c in range(data.Courses_max)) \
-          + sum(V_tr[t][r] for t in range(data.total_timeslots) for r in range(data.rooms_max)) \
-          + 2 * sum(A_qt[q][t] for q in range(data.Curricula_max) for t in range(data.total_timeslots))
+    obj = sum(5 * Workingdays_c[c] + 10 * Unplanned_c[c] + P_c[c] for c in range(data.Courses_max))
+    + sum(V_tr[t][r] for t in range(data.total_timeslots) for r in range(data.rooms_max))
+    + 2 * sum(A_qt[q][t] for q in range(data.Curricula_max) for t in range(data.total_timeslots))
     
     
     return obj
     #====================================================================================================
+
+# print(data)

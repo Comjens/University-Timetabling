@@ -30,18 +30,27 @@ class Qua:
     def __init__(self, a):
         self.a = a
 
+    def AddQua(self, n1, n2):
+        if not self.QL.__contains__(n1):
+            self.QL.append(n1)
+            self.IL.append(n2)
+
     def RemQua(self, place1, place2):
         self.QL.remove(place1)
         self.IL.remove(place2)
 
 
-class Suc:
-    SL = []
-    ItL = []
+class Diff:
+    DL = []
+    Av = 0
 
     def __init__(self, a):
         self.a = a
 
-    def RemSuc(self, place):
-        self.SL.remove(place)
-        self.ItL.remove(place)
+    def AddObj(self, num):
+        if len(self.DL) < self.a:
+            self.DL.append(num)
+        else:
+            self.DL.pop(0)
+            self.DL.append(num)
+        self.Av = sum(self.DL) / float(len(self.DL))
