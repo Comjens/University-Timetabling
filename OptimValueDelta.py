@@ -4,7 +4,7 @@ Created on Mon Apr  2 11:55:29 2018
 
 @author: maite
 """
-def Set_obj(data,swap1,swap2):
+def Set_obj(data,timetable,swap1,swap2):
     
     #first oenality term how many working day less then the desiderable the lectures are distributed over
     Workingdays_c = [0 for i in range(data.Courses_max)]
