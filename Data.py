@@ -1,4 +1,6 @@
-from Taboolist import Taboo, Qua
+from Taboolist import Taboo, Qua, Diff
+
+
 class Data:
     Courses_max = None
     rooms_max = None
@@ -21,13 +23,19 @@ class Data:
     T_tt= None
     Chi_cc = None
 
-
-    def __init__(self, data):
+    def __init__(self, data, params={'Alpha': 5,
+ 'Beta': 1,
+ 'Delta': 10,
+ 'Epsilon': 0.99995,
+ 'Gamma': 10,
+ 'Initiate': 1,
+ 'Sigma': 5}):
         self.basic = data['basic']
         self.courses = data['courses']
         self.rooms =data['rooms']
         self.relation = data['relation']
         self.unavailability = data['unavailability']
+        self.params = params
 
         # Basic data
         
@@ -48,8 +56,9 @@ class Data:
                           for course in range(self.Courses_max )}
         self.sol = {Course: [(None, None) for i in range(int(self.courses[Course+1][2]))]
                     for Course in range(self.Courses_max)}
-        self.tab = Taboo(20)
+        self.tab = Taboo(params['Delta'])
         self.qua = Qua(30)
+        self.diff = Diff(params['Alpha'])
         
 
     def set_T_tt(self,T_tt):

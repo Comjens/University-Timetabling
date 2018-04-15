@@ -13,7 +13,7 @@ def Set_obj(data,timetable):
     #first oenality term how many working day less then the desiderable the lectures are distributed over
     Workingdays_c = [0 for i in range(data.Courses_max)]
     for i in range(data.Courses_max):
-        a = 0
+        a = 0;
         for d in range(data.days_max):
             if (sum ( timetable[(i,t,r)] for r in range(data.rooms_max) for t in data.T_d[d]) >=1):
                 a=a+1
@@ -44,19 +44,18 @@ def Set_obj(data,timetable):
    
     
     #The number of room changes (number of violations of the room stability) by a course c ∈ C is calculated by the function Pc (x): 
-    P_c= [0 for c in range(data.Courses_max)] 
-    RO = [0 for r in range(data.rooms_max)] 
+    P_c= [0 for c in range(data.Courses_max)]
     for c in range(data.Courses_max):
-        for r in range(data.rooms_max):
-            RO[r]= sum (timetable[(c,t,r)] for t in range(data.total_timeslots))-1
-            #for c in range(data.Courses_max):
-        P_c[c] = max(0,RO[r])
+        P_c[c] = max(0, len([r for r in range(data.rooms_max) if
+                             sum(data.timetable[(c, t, r)] >= 1 for t in range(data.total_timeslots))]) - 1)
     data.set_P_c(P_c)
 
-    obj = sum(5 * Workingdays_c[c] + 10 * Unplanned_c[c] + P_c[c] for c in range(data.Courses_max)) \
-          + sum(V_tr[t][r] for t in range(data.total_timeslots) for r in range(data.rooms_max)) \
-          + 2 * sum(A_qt[q][t] for q in range(data.Curricula_max) for t in range(data.total_timeslots))
+    obj = sum(5 * Workingdays_c[c] + 10 * Unplanned_c[c] + P_c[c] for c in range(data.Courses_max))
+    + sum(V_tr[t][r] for t in range(data.total_timeslots) for r in range(data.rooms_max))
+    + 2 * sum(A_qt[q][t] for q in range(data.Curricula_max) for t in range(data.total_timeslots))
     
     
     return obj
     #====================================================================================================
+
+# print(data)
