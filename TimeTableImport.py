@@ -44,12 +44,12 @@ def Set_params(data):
 
     F_ct = [[False for i in range(data.total_timeslots)] for j in range(data.Courses_max)]
     for i, j, k in data.unavailability[1:]:
-        F_ct[int(i[1:])][int(j) * data.Periods_per_day + int(k) - 1] = True
+        F_ct[int(i[1:])][int(j) * data.Periods_per_day + int(k)] = True
     
     T_tt = [[0 for t in range(data.total_timeslots)] for t1 in range(data.total_timeslots)]
     for d in range(data.days_max):
         for t in T_d[d]:
-            if t<max(T_d[d]):
+            if t<max(T_d[d])-1:
                 T_tt[t][t+1]=1 
         
     Chi_cc= [[0 for c in range(data.Courses_max)] for c1 in range(data.Courses_max)]

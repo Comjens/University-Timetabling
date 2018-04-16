@@ -33,3 +33,4 @@ def SortChiComplexity(data,n2):
     a = Conf[0][0]-Conf[data.Courses_max-1][0]
     c= a-b
     return b
+

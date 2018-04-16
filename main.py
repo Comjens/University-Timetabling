@@ -28,8 +28,16 @@ PhaseCount = 0
 SuccessSwaps = 0
 
 verystart=time.time()
+import math
+print(CurrentObj)
+for i in datau.sol.keys():
+    for j in datau.sol[i]:
+        sol_i = {"course": i, "day": math.floor(j[0] / datau.days_max), "period": j[0] % datau.days_max,
+                "room": j[1]}
+        print("C{course:04} {day} {period} R{room:04}".format(**sol_i))
 
-while (time.time()- verystart) <= 500:
+''''
+while (time.time()- verystart) <= 30:
     start = time.time()
     Iteration = Iteration + 1
     print("ITERATION = ", Iteration)
@@ -40,3 +48,6 @@ while (time.time()- verystart) <= 500:
     #PhaseCount, Iteration, CurrentObj, SuccessSwaps = RoomSwapPrep(datau, CurrentObj, Iteration, PhaseCount, SuccessSwaps)
     
     print("Iteration Runtime: {:.5} s\n".format(time.time()-start))
+'''
+#data.
+#print("C{course:04} {day} {period} R{room:04}".format(sol_i))
