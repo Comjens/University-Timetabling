@@ -37,14 +37,14 @@ def Set_params(data):
     C_r = [0 for i in range(data.rooms_max)]
     for i, j in data.rooms[1:]:
         C_r[int(i[1:])] = int(j)
-    
     C_l = [[] for l in range(data.lecturers_max)]
     for i, j in enumerate(Mu_c):
         C_l[j].append(i)
-
+        
     F_ct = [[False for i in range(data.total_timeslots)] for j in range(data.Courses_max)]
     for i, j, k in data.unavailability[1:]:
-        F_ct[int(i[1:])][int(j) * data.Periods_per_day + int(k) - 1] = True
+        F_ct[int(i[1:])][int(j) * data.Periods_per_day + int(k)] = True
+
     
     T_tt = [[0 for t in range(data.total_timeslots)] for t1 in range(data.total_timeslots)]
     for d in range(data.days_max):

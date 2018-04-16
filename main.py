@@ -46,20 +46,32 @@ files = file_names(DIR)
 datau = Data(read_file(DIR,files))
 
 Set_params(datau)
+
 #print(data.sol,"\n\n\n\n")
 #print('#courses;', data.Courses_max,'\n#rooms:', data.rooms_max,'\n#timeslots:',data.total_timeslots) 
 InitPop(datau)
 
 CurrentObj = Set_obj(datau,datau.timetable)
 datau.BestObj = 9999999
+print(CurrentObj)
 
+verystart=time.time()
+import math
+for i in datau.sol.keys():
+    for j in datau.sol[i]:
+        try:
+            sol_i = {"course": i, "day": math.floor(j[0] / datau.days_max), "period": j[0] % datau.days_max,
+                "room": j[1]}
+            print("C{course:04} {day} {period} R{room:04}".format(**sol_i))
+        except:
+            pass
 
 Iteration = 0
 PhaseCount = 0
 SuccessSwaps = 0
 
 verystart=time.time()
-
+'''
 while (time.time()- verystart) <= 300:
     start = time.time()
     Iteration = Iteration + 1
@@ -74,4 +86,4 @@ while (time.time()- verystart) <= 300:
     print("Total Runtime: {:.5} s\n".format(time.time()-start))
        
 
-output(BasicFile, datau.params, CurrentObj, Iteration)        
+output(BasicFile, datau.params, CurrentObj, Iteration) '''       

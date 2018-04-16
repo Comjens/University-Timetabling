@@ -12,6 +12,8 @@ class Taboo:
         if not self.TL.__contains__(place):
             self.TL.append(place)
             self.TIL.append(n2+5)
+        else:
+            print("MISTAKE!,THIS WAS ALREADY IN TABU:",place)
                 
     def CheckTab(self,place):
        return place in self.TL
