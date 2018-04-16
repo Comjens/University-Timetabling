@@ -34,7 +34,6 @@ def Feasibility_Check(c1, t1, r1, data):
             
     #if Feasibility == True:
         #print('func',c1,t1,r1)
-=======
     
     'CONSTRAINT 5: Each course can only be planned once'
     if sum(data.timetable[(c1,t1,r)] for r in range(data.rooms_max)) >= 1:
