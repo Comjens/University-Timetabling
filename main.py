@@ -22,9 +22,7 @@ InitPop(datau.sol, datau.timetable, datau.Courses_max, datau.rooms_max, datau.to
 CurrentObj = Set_obj(datau,datau.timetable)
 datau.BestObj = 9999999
 
-#2print(data.sol, "\n")
-#print(Set_obj(data,data.timetable), "\n")
-#print(data.F_ct)
+
 
 Iteration = 0
 PhaseCount = 0
