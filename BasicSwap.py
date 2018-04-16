@@ -26,6 +26,11 @@ def BasicSwapAsp(datau, CurrentObj, Iteration):
     local_index = random.randint(0, len(c1_lectures)-1)
     c1_index, (t_old, r_old) = c1_lectures[local_index]
     
+    if (t_old, r_old) == (None, None):
+        c1Null = True
+    else:
+        c1Null = False
+    
     print("(c1, t_old, r_old) = ", c1, t_old, r_old)
         
     Possibilities = list(product(list(range(datau.total_timeslots)), list(range(datau.rooms_max))))
@@ -38,13 +43,13 @@ def BasicSwapAsp(datau, CurrentObj, Iteration):
         del Possibilities[poss_index]
         
         #Check if a course already exists in the target room durng timeslot t1
-        c2Exists = False
+        c2Null = True
         for c in range(datau.Courses_max):
             if datau.timetable[(c, t1, r1)] != 0:
-                c2Exists = True
+                c2Null = False
                 c2 = c
         
-        if c2Exists == True:
+        if c2Null == False and c1Null == False:
             datau.timetable[(c1, t_old, r_old)] = 0
             datau.timetable[(c2, t1, r1)] = 0
             
@@ -57,10 +62,26 @@ def BasicSwapAsp(datau, CurrentObj, Iteration):
                 
                 #Calculate the provisional objective
                 Obj = Set_obj(datau, datau.timetable, ((c2, t1, r1),(c2, t_old, r_old)), ((c1, t_old, r_old),(c1, t1, r1)))  
-                ObjectiveList.append((Obj, t1, r1, c2Exists, c2))
+                ObjectiveList.append((Obj, t1, r1, c2Null, c2))
                 
             else:
                 datau.timetable[(c1, t_old, r_old)] = 1
+                datau.timetable[(c2, t1, r1)] = 1
+                
+        elif c2Null == False and c1Null == True:
+            datau.timetable[(c2, t1, r1)] = 0
+            
+            #Check the feasibility of the moves
+            if Feasibility_Check(c1, t1, r1, datau):
+                FeasCount = FeasCount + 1
+                
+                datau.timetable[(c2, t1, r1)] = 1
+                
+                #Calculate the provisional objective
+                Obj = Set_obj(datau, datau.timetable, ((c2, t1, r1),(c2, t_old, r_old)), ((c1, t_old, r_old),(c1, t1, r1)))  
+                ObjectiveList.append((Obj, t1, r1, c2Null, c2))
+                
+            else:
                 datau.timetable[(c2, t1, r1)] = 1
         else:
             if Feasibility_Check(c1, t1, r1, datau):
@@ -68,7 +89,7 @@ def BasicSwapAsp(datau, CurrentObj, Iteration):
                 
                 #Calculate the provisional objective
                 Obj = Set_obj(datau, datau.timetable, ((c1, t_old, r_old),(c1, None, None)), ((c1, None, None),(c1, t1, r1)))
-                ObjectiveList.append((Obj, t1, r1, c2Exists, None))
+                ObjectiveList.append((Obj, t1, r1, c2Null, None))
                         
     #Perform the best swap discovered
     ObjectiveList.sort(key=lambda elem: elem[0])
@@ -79,13 +100,13 @@ def BasicSwapAsp(datau, CurrentObj, Iteration):
     #Iterate until we can perform a move
     while not Accepted:
         
-        CurrentObj, t1, r1, c2Exists, c2 = ObjectiveList[Obj_index]
+        CurrentObj, t1, r1, c2Null, c2 = ObjectiveList[Obj_index]
         
         if CurrentObj < datau.BestObj:
             print("NEW BEST!")
             Accepted = True
             
-            if c2Exists:
+            if not c2Null:
                 datau.timetable[(c1, t_old, r_old)] = 0
                 datau.timetable[(c2, t1, r1)] = 0
                 datau.timetable[(c1, t1, r1)] = 1
@@ -121,7 +142,7 @@ def BasicSwapAsp(datau, CurrentObj, Iteration):
         else:
             print("Kept previous objective")
             
-            if c2Exists and not datau.tab.CheckTab((c2, t_old, r_old, datau)) and not datau.tab.CheckTab((c1, t1, r1, datau)):
+            if not c2Null and not datau.tab.CheckTab((c2, t_old, r_old, datau)) and not datau.tab.CheckTab((c1, t1, r1, datau)):
                 datau.timetable[(c1, t_old, r_old)] = 0
                 datau.timetable[(c2, t1, r1)] = 0
                 datau.timetable[(c1, t1, r1)] = 1
@@ -172,9 +193,15 @@ def BasicSwap(datau, CurrentObj, Iteration):
     c1 = c1list[random.randint(0, len(c1list) - 1)]
     
     #Choose the lecture in the sol dictionary that will be assessed
+    
     c1_lectures = list(enumerate(datau.sol[c1]))
     local_index = random.randint(0, len(c1_lectures)-1)
     c1_index, (t_old, r_old) = c1_lectures[local_index]
+    
+    if (t_old, r_old) == (None, None):
+        c1Null = True
+    else:
+        c1Null = False
     
     print("(c1, t_old, r_old) = ", c1, t_old, r_old)
         
@@ -192,13 +219,13 @@ def BasicSwap(datau, CurrentObj, Iteration):
         del Possibilities[poss_index]
         
         #Check if a course already exists in the target room durng timeslot t1
-        c2Exists = False
+        c2Null = True
         for c in range(datau.Courses_max):
             if datau.timetable[(c, t1, r1)] != 0:
-                c2Exists = True
+                c2Null = False
                 c2 = c
         
-        if c2Exists == True:
+        if c2Null == False and c1Null == False:
             datau.timetable[(c1, t_old, r_old)] = 0
             datau.timetable[(c2, t1, r1)] = 0
             
@@ -211,29 +238,48 @@ def BasicSwap(datau, CurrentObj, Iteration):
                 
                 #Calculate the provisional objective
                 Obj = Set_obj_delta(datau, ((c2, t1, r1),(c2, t_old, r_old)), ((c1, t_old, r_old),(c1, t1, r1)))  
-                ObjectiveList.append((Obj, t1, r1, c2Exists, c2))
+                ObjectiveList.append((Obj, t1, r1, c2Null, c2))
                 
             else:
                 datau.timetable[(c1, t_old, r_old)] = 1
                 datau.timetable[(c2, t1, r1)] = 1
+                
+        elif c2Null == False and c1Null == True:
+            datau.timetable[(c2, t1, r1)] = 0
+            
+            #Check the feasibility of the moves
+            if Feasibility_Check(c1, t1, r1, datau):
+                FeasCount = FeasCount + 1
+                
+                datau.timetable[(c2, t1, r1)] = 1
+                
+                #Calculate the provisional objective
+                Obj = Set_obj_delta(datau, ((c2, t1, r1),(c2, t_old, r_old)), ((c1, t_old, r_old),(c1, t1, r1)))  
+                ObjectiveList.append((Obj, t1, r1, c2Null, c2))
+                
+            else:
+                datau.timetable[(c1, t_old, r_old)] = 1
+                datau.timetable[(c2, t1, r1)] = 1
+            
         else:
             if Feasibility_Check(c1, t1, r1, datau):
                 FeasCount = FeasCount + 1
                 
                 #Calculate the provisional objective
                 Obj = Set_obj_delta(datau, ((c1, t_old, r_old),(c1, None, None)), ((c1, None, None),(c1, t1, r1)))
-                ObjectiveList.append((Obj, t1, r1, c2Exists, None))
+                ObjectiveList.append((Obj, t1, r1, c2Null, None))
                         
     #Perform the best swap discovered
     ObjectiveList.sort(key=lambda elem: elem[0])
-    CurrentObj, t1, r1, c2Exists, c2 = ObjectiveList[0]
+    CurrentObj, t1, r1, c2Null, c2 = ObjectiveList[0]
         
-    if c2Exists:
+    if not c2Null:
         datau.timetable[(c1, t_old, r_old)] = 0
         datau.timetable[(c2, t1, r1)] = 0
         datau.timetable[(c1, t1, r1)] = 1
         datau.timetable[(c2, t_old, r_old)] = 1
         datau.sol[c1][c1_index] = (t1, r1)
+        
         datau.sol[c2][(datau.sol[c2]).index((t1, r1))] = (t_old, r_old)
         
         datau.tab.AddTab((c2, t_old, r_old), datau)
