@@ -94,8 +94,7 @@ def Set_obj_delta(data, swap1, swap2):
     A_qt = [[0 for t in range(data.total_timeslots)] for q in range(data.Curricula_max)]
     for q in range(data.Curricula_max):
         for t in range(data.total_timeslots):
-            if sum(temp_set_ctr[c][t][r] for r in range(data.rooms_max) for c in
-                   data.C_q[q]) == 1:
+            if sum(temp_set_ctr[c][t][r] for r in range(data.rooms_max) for c in data.C_q[q]) == 1:
                 if sum(temp_set_ctr[c][t2][r] for c in data.C_q[q] for r in
                        range(data.rooms_max) for t2 in range(data.total_timeslots) if data.T_tt[t][t2] == 1) == 0:
                     A_qt[q][t] = 1

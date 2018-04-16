@@ -16,7 +16,8 @@ def output(PeraFile, params, CurrentObj, Iteration):
     Delta = params['Delta']
     Epsilon = params['Epsilon']
     Initiate = params['Initiate']
-
+=======
+from OptimValueDelta import *
     # with open(PeraFile,mode = 'a+') as infile:
     #    infile.write("{:2},{},{},{},{},{},{},{}".format(datetime.datetime.now().isoformat(),alpha,beta,gamma,sigma,epsilon,init,data.CurrentObj,Iteration)
     if not os.path.isfile(PeraFile + ".csv"):
@@ -82,8 +83,12 @@ while (time.time()- verystart) <= 300:
     
     #PhaseCount, Iteration, CurrentObj, SuccessSwaps = RoomSwapPrep(datau, CurrentObj, Iteration, PhaseCount, SuccessSwaps)
     
+
     print("Iteration Runtime: {:.5} s\n".format(time.time()-start))
     print("Total Runtime: {:.5} s\n".format(time.time()-start))
        
 
 output(BasicFile, datau.params, CurrentObj, Iteration) '''       
+=======
+    print("Iteration Runtime: {:.5} s\n".format(time.time()-start))
+
