@@ -210,7 +210,7 @@ def BasicSwap(datau, CurrentObj, Iteration):
                 datau.timetable[(c2, t1, r1)] = 1
                 
                 #Calculate the provisional objective
-                Obj = Set_obj(datau, datau.timetable, ((c2, t1, r1),(c2, t_old, r_old)), ((c1, t_old, r_old),(c1, t1, r1)))  
+                Obj = Set_obj_delta(datau, ((c2, t1, r1),(c2, t_old, r_old)), ((c1, t_old, r_old),(c1, t1, r1)))  
                 ObjectiveList.append((Obj, t1, r1, c2Exists, c2))
                 
             else:
