@@ -35,7 +35,7 @@ def Set_obj(data,timetable):
     print(V_tr)
     
     #determines if a curriculum in a time slot has a secluded lecture i.e. there is no adjacent lecture from the same curriculum
-    A_qt=  [[0 for t in range(data.total_timeslots)] for q in range(data.Curricula_max)]
+    A_qt = [[0 for t in range(data.total_timeslots)] for q in range(data.Curricula_max)]
     for q in range(data.Curricula_max) :
         for t in range(data.total_timeslots):
             if sum (timetable[(c,t,r)] for r in range(data.rooms_max) for c in data.C_q[q])==1 :
@@ -45,13 +45,18 @@ def Set_obj(data,timetable):
    
     
     #The number of room changes (number of violations of the room stability) by a course c ∈ C is calculated by the function Pc (x): 
-    P_c= [0 for c in range(data.Courses_max)]
+    P_c = [0 for c in range(data.Courses_max)]
     for c in range(data.Courses_max):
         P_c[c] = max(0, len([r for r in range(data.rooms_max) if
                              sum(data.timetable[(c, t, r)] >= 1 for t in range(data.total_timeslots))]) - 1)
     data.set_P_c(P_c)
 
+    obj = sum(5 * Workingdays_c[c] + 10 * Unplanned_c[c] + P_c[c] for c in range(data.Courses_max))\
+    + sum(V_tr[t][r] for t in range(data.total_timeslots) for r in range(data.rooms_max))\
+    + 2 * sum(A_qt[q][t] for q in range(data.Curricula_max) for t in range(data.total_timeslots))
+
     obj = sum(5 * Workingdays_c[c] + 10 * Unplanned_c[c] + P_c[c] for c in range(data.Courses_max)) + sum(V_tr[t][r] for t in range(data.total_timeslots) for r in range(data.rooms_max)) + 2 * sum(A_qt[q][t] for q in range(data.Curricula_max) for t in range(data.total_timeslots))
+
     
     
     return obj

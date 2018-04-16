@@ -24,10 +24,20 @@ def Feasibility_Check(c1, t1, r1, data):
     for c in range(data.Courses_max):
         if data.Chi_cc[c1][c] == 1 and sum(data.timetable[(c,t1,r)] for r in range(data.rooms_max)) >= 1:
             Feasibility = False
+
+            return Feasibility
+
+    #Constraint 5
+    if sum(data.timetable[(c1,t1,r)] for r in range(data.rooms_max)) >= 1:
+        Feasibility = False
+        return Feasibility
+            
+    #if Feasibility == True:
+        #print('func',c1,t1,r1)
+=======
     
     'CONSTRAINT 5: Each course can only be planned once'
     if sum(data.timetable[(c1,t1,r)] for r in range(data.rooms_max)) >= 1:
         Feasibility = False
-
     return Feasibility
 

@@ -72,7 +72,20 @@ PhaseCount = 0
 SuccessSwaps = 0
 
 verystart=time.time()
-'''
+
+import math
+print(CurrentObj)
+for i in datau.sol.keys():
+    for j in datau.sol[i]:
+        try:
+            sol_i = {"course": i, "day": math.floor(j[0] / datau.days_max), "period": j[0] % datau.days_max,
+                "room": j[1]}
+            print("C{course:04} {day} {period} R{room:04}".format(**sol_i))
+        except:
+            pass
+
+
+
 while (time.time()- verystart) <= 300:
     start = time.time()
     Iteration = Iteration + 1
@@ -85,10 +98,13 @@ while (time.time()- verystart) <= 300:
     
 
     print("Iteration Runtime: {:.5} s\n".format(time.time()-start))
+
+
+
+    print("Iteration Runtime: {:.5} s\n".format(time.time()-start))
     print("Total Runtime: {:.5} s\n".format(time.time()-start))
        
 
-output(BasicFile, datau.params, CurrentObj, Iteration) '''       
-=======
-    print("Iteration Runtime: {:.5} s\n".format(time.time()-start))
+  output(BasicFile, datau.params, CurrentObj, Iteration) '''       
 
+    print("Iteration Runtime: {:.5} s\n".format(time.time()-start))
