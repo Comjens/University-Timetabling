@@ -54,12 +54,8 @@ def Set_obj(data,timetable):
     obj = sum(5 * Workingdays_c[c] + 10 * Unplanned_c[c] + P_c[c] for c in range(data.Courses_max))\
     + sum(V_tr[t][r] for t in range(data.total_timeslots) for r in range(data.rooms_max))\
     + 2 * sum(A_qt[q][t] for q in range(data.Curricula_max) for t in range(data.total_timeslots))
-
-    obj = sum(5 * Workingdays_c[c] + 10 * Unplanned_c[c] + P_c[c] for c in range(data.Courses_max)) + sum(V_tr[t][r] for t in range(data.total_timeslots) for r in range(data.rooms_max)) + 2 * sum(A_qt[q][t] for q in range(data.Curricula_max) for t in range(data.total_timeslots))
-
     
     
     return obj
     #====================================================================================================
 
-# print(data)
