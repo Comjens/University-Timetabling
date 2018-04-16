@@ -186,7 +186,7 @@ def BasicSwap(datau, CurrentObj, Iteration):
     #Initiate the c1 candidate list
     c1list = list(range(0, datau.Courses_max))
     ObjectiveList = []
-    FeasMax = 30
+    FeasMax = 10
     FeasCount = 0
 
     #Choose the c1 to be worked with
