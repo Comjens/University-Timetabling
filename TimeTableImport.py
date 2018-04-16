@@ -67,7 +67,9 @@ def Set_params(data):
     Conflicting_c= [0 for c in range(data.Courses_max)] 
     for c in range(data.Courses_max):
         Conflicting_c[c] = sum(Chi_cc[c][c1] for c1 in range(data.Courses_max))
-    data.set_Conflicting_c(Conflicting_c)            
+    data.set_Conflicting_c(Conflicting_c)      
+
+    V_trc = [[[0 for c in range(data.Courses_max)] for r in range(data.rooms_max)] for t in range (data.total_timeslots)]      
     
     #print(type(C_q))
     data.set_C_q(C_q)

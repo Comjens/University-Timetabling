@@ -61,7 +61,7 @@ def BasicSwapAsp(datau, CurrentObj, Iteration):
                 datau.timetable[(c2, t1, r1)] = 1
                 
                 #Calculate the provisional objective
-                Obj = Set_obj(datau, datau.timetable, ((c2, t1, r1),(c2, t_old, r_old)), ((c1, t_old, r_old),(c1, t1, r1)))  
+                Obj = Set_obj_delta(datau,((c2, t1, r1),(c2, t_old, r_old)), ((c1, t_old, r_old),(c1, t1, r1)))  
                 ObjectiveList.append((Obj, t1, r1, c2Null, c2))
                 
             else:
@@ -78,7 +78,7 @@ def BasicSwapAsp(datau, CurrentObj, Iteration):
                 datau.timetable[(c2, t1, r1)] = 1
                 
                 #Calculate the provisional objective
-                Obj = Set_obj(datau, datau.timetable, ((c2, t1, r1),(c2, t_old, r_old)), ((c1, t_old, r_old),(c1, t1, r1)))  
+                Obj = Set_obj_delta(datau, ((c2, t1, r1),(c2, t_old, r_old)), ((c1, t_old, r_old),(c1, t1, r1)))  
                 ObjectiveList.append((Obj, t1, r1, c2Null, c2))
                 
             else:
@@ -88,7 +88,7 @@ def BasicSwapAsp(datau, CurrentObj, Iteration):
                 FeasCount = FeasCount + 1
                 
                 #Calculate the provisional objective
-                Obj = Set_obj(datau, datau.timetable, ((c1, t_old, r_old),(c1, None, None)), ((c1, None, None),(c1, t1, r1)))
+                Obj = Set_obj_delta(datau, ((c1, t_old, r_old),(c1, None, None)), ((c1, None, None),(c1, t1, r1)))
                 ObjectiveList.append((Obj, t1, r1, c2Null, None))
                         
     #Perform the best swap discovered
