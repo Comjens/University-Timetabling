@@ -3,14 +3,12 @@ from Differentials import *
 import time
 import random
 from __global__ import *
-from BasicSwap import BasicSwap,BasicSwapAsp
+from BasicSwap import BasicSwap
 from Sort import *
-from OptimValueDelta import *
-
-
+'''
 def output(PeraFile, params, CurrentObj, Iteration):
     import datetime, os
-    Set = 'Test02'
+    Set = params['Set'][-7:-1]
     Alpha = params['Alpha']
     Beta = params['Beta']
     Gamma = params['Gamma']
@@ -18,7 +16,7 @@ def output(PeraFile, params, CurrentObj, Iteration):
     Delta = params['Delta']
     Epsilon = params['Epsilon']
     Initiate = params['Initiate']
-
+from OptimValueDelta import *
     # with open(PeraFile,mode = 'a+') as infile:
     #    infile.write("{:2},{},{},{},{},{},{},{}".format(datetime.datetime.now().isoformat(),alpha,beta,gamma,sigma,epsilon,init,data.CurrentObj,Iteration)
     if not os.path.isfile(PeraFile + ".csv"):
@@ -35,71 +33,69 @@ def output(PeraFile, params, CurrentObj, Iteration):
                 "\n{},{},{},{},{},{},{},{},{},{},{}".format(datetime.datetime.now().isoformat(), Set, Alpha, Beta,
                                                             Gamma, Delta, Sigma, Epsilon, Initiate, CurrentObj,
                                                             Iteration))
-
+'''
 
 # zip(['Alpha', 'Beta', 'Gamma', 'Delta', 'Sigma', 'Epsilon', 'Initiate'],initList[random.randint(1,len(initList)-1)])
 # {i:j for i,j in zip(['Alpha', 'Beta', 'Gamma', 'Delta', 'Sigma', 'Epsilon', 'Initiate'],)}
-PeraFile = "TestCasesBasicSwapavp"
+PeraFile = "TestCases"
+
 
 DIR = "Data/Test02/"
 
 files = file_names(DIR)
-datau = Data(read_file(DIR, files))
+datau = Data(read_file(DIR,files))
 
 Set_params(datau)
 
-# print(data.sol,"\n\n\n\n")
-# print('#courses;', data.Courses_max,'\n#rooms:', data.rooms_max,'\n#timeslots:',data.total_timeslots)
+#print(data.sol,"\n\n\n\n")
+#print('#courses;', data.Courses_max,'\n#rooms:', data.rooms_max,'\n#timeslots:',data.total_timeslots) 
 InitPop(datau)
 
-CurrentObj = Set_obj(datau, datau.timetable)
+CurrentObj = Set_obj(datau,datau.timetable)
 datau.BestObj = 9999999
 print(CurrentObj)
-#output(PeraFile, datau.params, 1e10, 0)
-verystart = time.time()
-import math
 
+verystart=time.time()
+import math
 for i in datau.sol.keys():
     for j in datau.sol[i]:
         try:
             sol_i = {"course": i, "day": math.floor(j[0] / datau.days_max), "period": j[0] % datau.days_max,
-                     "room": j[1]}
+                "room": j[1]}
+            print("C{course:04} {day} {period} R{room:04}".format(**sol_i))
+        except:
+            pass
+
+Iteration = 0
+PhaseCount = 0
+SuccessSwaps = 0
+
+verystart=time.time()
+
+import math
+print(CurrentObj)
+for i in datau.sol.keys():
+    for j in datau.sol[i]:
+        try:
+            sol_i = {"course": i, "day": math.floor(j[0] / datau.days_max), "period": j[0] % datau.days_max,
+                "room": j[1]}
             print("C{course:04} {day} {period} R{room:04}".format(**sol_i))
         except:
             pass
 
 
 
-while True:
-    datau = Data(read_file(DIR, files))
+while (time.time()- verystart) <= 300:
+    start = time.time()
+    Iteration = Iteration + 1
+    print("ITERATION = ", Iteration)
+    CurrentObj, Iteration = BasicSwap(datau, CurrentObj, Iteration)
+    
+    #Obj = Set_obj(datau,datau.timetable)
+    
+    #PhaseCount, Iteration, CurrentObj, SuccessSwaps = RoomSwapPrep(datau, CurrentObj, Iteration, PhaseCount, SuccessSwaps)
+    
 
-    Set_params(datau)
-
-    # print(data.sol,"\n\n\n\n")
-    # print('#courses;', data.Courses_max,'\n#rooms:', data.rooms_max,'\n#timeslots:',data.total_timeslots)
-    InitPop(datau)
-
-    CurrentObj = Set_obj(datau, datau.timetable)
-    datau.BestObj = 9999999
-    print(CurrentObj)
-    Iteration = 0
-    PhaseCount = 0
-    SuccessSwaps = 0
-
-    verystart = time.time()
-    while (time.time() - verystart) <= 300:
-        start = time.time()
-        Iteration = Iteration + 1
-        print("ITERATION = ", Iteration)
-        CurrentObj, Iteration = BasicSwap(datau, CurrentObj, Iteration)
-
-        # Obj = Set_obj(datau,datau.timetable)
-
-        # PhaseCount, Iteration, CurrentObj, SuccessSwaps = RoomSwapPrep(datau, CurrentObj, Iteration, PhaseCount, SuccessSwaps)
-
-        print("Iteration Runtime: {:.5} s\n".format(time.time() - start))
-        print("Total Runtime: {:.5} s\n".format(time.time() - verystart))
-
-    output(PeraFile, datau.params, datau.BestObj, Iteration)
+    print("Iteration Runtime: {:.5} s\n".format(time.time()-start))
 
 
