@@ -63,7 +63,7 @@ def InitPop(data):
                 del Possibilities[p_index]
 
                 #Perform a feasibility check, if feasible, schedule the course
-                Feasibility = Feasibility_Check(c1, t1, r1, data.timetable,data.Courses_max,data.F_ct,data)
+                Feasibility = Feasibility_Check(c1, t1, r1, data)
             
                 if Feasibility == True:
                     data.sol[c1][c1_index] = (t1, r1)
