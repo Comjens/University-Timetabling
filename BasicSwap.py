@@ -7,7 +7,7 @@ Created on Mon Apr 16 13:50:12 2018
 from itertools import product
 import random
 import copy
-from OptimValueDelta import Set_obj
+from OptimValueDelta import Set_obj_delta
 from FeasibilityCheck import Feasibility_Check
 
 def BasicSwapAsp(datau, CurrentObj, Iteration):
@@ -221,7 +221,7 @@ def BasicSwap(datau, CurrentObj, Iteration):
                 FeasCount = FeasCount + 1
                 
                 #Calculate the provisional objective
-                Obj = Set_obj(datau, datau.timetable, ((c1, t_old, r_old),(c1, None, None)), ((c1, None, None),(c1, t1, r1)))
+                Obj = Set_obj_delta(datau, ((c1, t_old, r_old),(c1, None, None)), ((c1, None, None),(c1, t1, r1)))
                 ObjectiveList.append((Obj, t1, r1, c2Exists, None))
                         
     #Perform the best swap discovered

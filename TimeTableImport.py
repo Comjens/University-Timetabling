@@ -63,6 +63,11 @@ def Set_params(data):
             for c2 in C_l[l]:
                 if (c2!=c1):
                     Chi_cc[c1][c2] = 1 
+                    
+    Conflicting_c= [0 for c in range(data.Courses_max)] 
+    for c in range(data.Courses_max):
+        Conflicting_c[c] = sum(Chi_cc[c][c1] for c1 in range(data.Courses_max))
+    data.set_Conflicting_c(Conflicting_c)            
     
     #print(type(C_q))
     data.set_C_q(C_q)
