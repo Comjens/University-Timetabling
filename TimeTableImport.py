@@ -15,16 +15,6 @@ def read_file(DIR, files):
         data[i[:-4]]= temp
     return data
 
-
-#DIR = "data/Test01/"
-#files = file_names(DIR)
-#data = Data(read_file(files))
-
-#data= read_file(files)
-#print(data.keys())
-
-
-
 def Set_params(data):
 
     C_q = [[] for q in range(data.Curricula_max)]

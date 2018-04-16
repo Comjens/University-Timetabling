@@ -1,3 +1,4 @@
+from Parameters import Alpha, Delta
 from Taboolist import Taboo, Qua, Diff
 
 
@@ -18,10 +19,13 @@ class Data:
     F_ct= None
     Unplanned_c=None
     Workingdays_c=0
-    V_tr=None
-    A_qt= None
-    T_tt= None
+    V_tr = None
+    V_trc = None
+    A_qt = None
+    T_tt = None
     Chi_cc = None
+    Conflicting_c = None
+    BestObj = None
 
     def __init__(self, data, params={'Alpha': 5,
  'Beta': 1,
@@ -56,6 +60,8 @@ class Data:
                           for course in range(self.Courses_max )}
         self.sol = {Course: [(None, None) for i in range(int(self.courses[Course+1][2]))]
                     for Course in range(self.Courses_max)}
+        self.BestSol = {Course: [(None, None) for i in range(int(self.courses[Course + 1][2]))]
+                        for Course in range(self.Courses_max)}
         self.tab = Taboo(params['Delta'])
         self.qua = Qua(30)
         self.diff = Diff(params['Alpha'])
@@ -69,6 +75,10 @@ class Data:
         assert isinstance(Chi_cc, list)
         self.Chi_cc = Chi_cc
     
+    def set_Conflicting_c(self,Conflicting_c):
+        assert isinstance(Conflicting_c, list)
+        self.Conflicting_c = Conflicting_c
+
     def set_C_q(self,C_q):
         assert isinstance(C_q, list)
         self.C_q = C_q
@@ -112,6 +122,10 @@ class Data:
     def set_V_tr(self,V_tr):
         assert isinstance(V_tr, list)
         self.V_tr = V_tr
+        
+    def set_V_trc(self,V_trc):
+        assert isinstance(V_trc, list)
+        self.V_trc = V_trc
     
     def set_A_qt(self,A_qt):
         assert isinstance(A_qt, list)
