@@ -4,7 +4,7 @@ import time
 import random
 from __global__ import *
 from BasicSwap import BasicSwap
-
+from OptimValueDelta import *
 
 
 
@@ -40,5 +40,3 @@ while (time.time()- verystart) <= 500:
     #PhaseCount, Iteration, CurrentObj, SuccessSwaps = RoomSwapPrep(datau, CurrentObj, Iteration, PhaseCount, SuccessSwaps)
     
     print("Iteration Runtime: {:.5} s\n".format(time.time()-start))
-       
-        
