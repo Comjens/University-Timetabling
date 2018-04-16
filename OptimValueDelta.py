@@ -96,7 +96,7 @@ def Set_obj_delta(data, swap1, swap2):
         for t in range(data.total_timeslots):
             if sum(temp_set_ctr[c][t][r] for r in range(data.rooms_max) for c in data.C_q[q]) == 1:
                 if sum(temp_set_ctr[c][t2][r] for c in data.C_q[q] for r in
-                       range(data.rooms_max) for t2 in range(data.total_timeslots) if data.T_tt[t][t2] == 1) == 0:
+                       range(data.rooms_max) for t2 in range(data.total_timeslots) if data.T_tt[t][t2] == 1 or data.T_tt[t2][t] == 1) == 0:
                     A_qt[q][t] = 1
 
     # The number of room changes (number of violations of the room stability) by a course c ∈ C is calculated by the function Pc (x):
@@ -109,7 +109,7 @@ def Set_obj_delta(data, swap1, swap2):
         P_c[c] = max(0, sum(1 if RO[r] >= 1 else 0 for r in range(data.rooms_max)))
     # data.set_P_c(P_c)
 
-    obj = sum(5 * Workingdays_c[c] + 10 * Unplanned_c[c] + P_c[c] for c in range(data.Courses_max))
-    + sum(V_tr[t][r] for t in range(data.total_timeslots) for r in range(data.rooms_max))
+    obj = sum(5 * Workingdays_c[c] + 10 * Unplanned_c[c] + P_c[c] for c in range(data.Courses_max))\
+    + sum(V_tr[t][r] for t in range(data.total_timeslots) for r in range(data.rooms_max))\
     + 2 * sum(A_qt[q][t] for q in range(data.Curricula_max) for t in range(data.total_timeslots))
     return obj

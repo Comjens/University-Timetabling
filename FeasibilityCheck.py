@@ -31,10 +31,9 @@ def Feasibility_Check(c1, t1, r1, data):
             return Feasibility
 
     #Constraint 5
-    for c in range(data.Courses_max):
-        if sum(data.timetable[(c,t1,r)] for r in range(data.rooms_max)) >= 1
-            Feasibility = False
-            return Feasibility
+    if sum(data.timetable[(c1,t1,r)] for r in range(data.rooms_max)) >= 1:
+        Feasibility = False
+        return Feasibility
             
     #if Feasibility == True:
         #print('func',c1,t1,r1)
