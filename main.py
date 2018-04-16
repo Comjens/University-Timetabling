@@ -5,7 +5,7 @@ import random
 from __global__ import *
 from BasicSwap import BasicSwap
 from Sort import *
-
+'''
 def output(PeraFile, params, CurrentObj, Iteration):
     import datetime, os
     Set = params['Set'][-7:-1]
@@ -16,7 +16,6 @@ def output(PeraFile, params, CurrentObj, Iteration):
     Delta = params['Delta']
     Epsilon = params['Epsilon']
     Initiate = params['Initiate']
-=======
 from OptimValueDelta import *
     # with open(PeraFile,mode = 'a+') as infile:
     #    infile.write("{:2},{},{},{},{},{},{},{}".format(datetime.datetime.now().isoformat(),alpha,beta,gamma,sigma,epsilon,init,data.CurrentObj,Iteration)
@@ -34,7 +33,7 @@ from OptimValueDelta import *
                 "\n{},{},{},{},{},{},{},{},{},{},{}".format(datetime.datetime.now().isoformat(), Set, Alpha, Beta,
                                                             Gamma, Delta, Sigma, Epsilon, Initiate, CurrentObj,
                                                             Iteration))
-
+'''
 
 # zip(['Alpha', 'Beta', 'Gamma', 'Delta', 'Sigma', 'Epsilon', 'Initiate'],initList[random.randint(1,len(initList)-1)])
 # {i:j for i,j in zip(['Alpha', 'Beta', 'Gamma', 'Delta', 'Sigma', 'Epsilon', 'Initiate'],)}
@@ -100,11 +99,3 @@ while (time.time()- verystart) <= 300:
     print("Iteration Runtime: {:.5} s\n".format(time.time()-start))
 
 
-
-    print("Iteration Runtime: {:.5} s\n".format(time.time()-start))
-    print("Total Runtime: {:.5} s\n".format(time.time()-start))
-       
-
-  output(BasicFile, datau.params, CurrentObj, Iteration) '''       
-
-    print("Iteration Runtime: {:.5} s\n".format(time.time()-start))

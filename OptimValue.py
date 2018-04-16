@@ -39,7 +39,7 @@ def Set_obj(data,timetable):
     for q in range(data.Curricula_max) :
         for t in range(data.total_timeslots):
             if sum (timetable[(c,t,r)] for r in range(data.rooms_max) for c in data.C_q[q])==1 :
-                if sum (timetable[(c,t2,r)] for c in data.C_q[q] for r in range(data.rooms_max) for t2 in range(data.total_timeslots) if data.T_tt[t][t2]==1)==0:
+                if sum (timetable[(c,t2,r)] for c in data.C_q[q] for r in range(data.rooms_max) for t2 in range(data.total_timeslots) if data.T_tt[t][t2]==1 or data.T_tt[t2][t]==1)==0:
                     A_qt[q][t] = 1 
     data.set_A_qt(A_qt)        
    
@@ -54,12 +54,8 @@ def Set_obj(data,timetable):
     obj = sum(5 * Workingdays_c[c] + 10 * Unplanned_c[c] + P_c[c] for c in range(data.Courses_max))\
     + sum(V_tr[t][r] for t in range(data.total_timeslots) for r in range(data.rooms_max))\
     + 2 * sum(A_qt[q][t] for q in range(data.Curricula_max) for t in range(data.total_timeslots))
-
-    obj = sum(5 * Workingdays_c[c] + 10 * Unplanned_c[c] + P_c[c] for c in range(data.Courses_max)) + sum(V_tr[t][r] for t in range(data.total_timeslots) for r in range(data.rooms_max)) + 2 * sum(A_qt[q][t] for q in range(data.Curricula_max) for t in range(data.total_timeslots))
-
     
     
     return obj
     #====================================================================================================
 
-# print(data)
