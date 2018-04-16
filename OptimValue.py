@@ -30,8 +30,9 @@ def Set_obj(data,timetable):
     V_tr = [[0 for r in range(data.rooms_max)] for t in range(data.total_timeslots)]
     for t in range(data.total_timeslots): 
         for r in range(data.rooms_max):
-            V_tr[t][r] = max (0, sum ([timetable[(c,t,r)]*data.S_c[c] for c in range(data.Courses_max)]) - data.C_r[r])
+            V_tr[t][r] = max (0, sum ([timetable[(c,t,r)]*data.S_c[c] for c in range(data.Courses_max)]) - data.C_r[r])       
     data.set_V_tr(V_tr)
+    print(V_tr)
     
     #determines if a curriculum in a time slot has a secluded lecture i.e. there is no adjacent lecture from the same curriculum
     A_qt = [[0 for t in range(data.total_timeslots)] for q in range(data.Curricula_max)]
@@ -53,6 +54,9 @@ def Set_obj(data,timetable):
     obj = sum(5 * Workingdays_c[c] + 10 * Unplanned_c[c] + P_c[c] for c in range(data.Courses_max))\
     + sum(V_tr[t][r] for t in range(data.total_timeslots) for r in range(data.rooms_max))\
     + 2 * sum(A_qt[q][t] for q in range(data.Curricula_max) for t in range(data.total_timeslots))
+
+    obj = sum(5 * Workingdays_c[c] + 10 * Unplanned_c[c] + P_c[c] for c in range(data.Courses_max)) + sum(V_tr[t][r] for t in range(data.total_timeslots) for r in range(data.rooms_max)) + 2 * sum(A_qt[q][t] for q in range(data.Curricula_max) for t in range(data.total_timeslots))
+
     
     
     return obj
