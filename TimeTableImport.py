@@ -15,7 +15,7 @@ def read_file(DIR, files):
         data[i[:-4]]= temp
     return data
 
-def Set_para(data):
+def Set_params(data):
 
     C_q = [[] for q in range(data.Curricula_max)]
     for i, j in data.relation[1:]:

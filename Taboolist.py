@@ -11,7 +11,7 @@ class Taboo:
         n2=SortChiComplexity(data,place)
         if not self.TL.__contains__(place):
             self.TL.append(place)
-            self.TIL.append(n2+5)
+            self.TIL.append(n2+data.params['Delta'])
         else:
             print("MISTAKE!,THIS WAS ALREADY IN TABU:",place)
                 

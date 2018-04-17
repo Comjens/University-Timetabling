@@ -8,13 +8,45 @@ from Sort import *
 from TimeslotSwapSelection import TimeslotSwapSelection
 import random
  
-def TimeslotSwapPrep(Data, CurrentObj):
+def TimeslotSwapPrep(Data, CurrentObj, Iteration):
     Possible = True
     print("TIMESLOT SWAP")
        
-    #Determine the c1 candidate list
-    c1list = SortTimeDomain(Data, 0.05)
-    c1 = c1list[random.randint(0, len(c1list)-1)]
+        #Determine the c1 candidate list
+    c1list = []
+    c1list = SortRoomDomain(Data, 1)
+    
+    QL = Data.qua.QL
+    IL = Data.qua.IL
+    TL = Data.tab.TL
+    TIL = Data.tab.TIL
+    
+    print("QL = ", QL)
+
+    #Update the quarantine list
+    k = len(IL) - 1
+    while k >= 0:
+        if IL[k] == Iteration:
+            Data.qua.RemQua(QL[k], IL[k])
+        elif QL[k] in c1list:
+            del c1list[c1list.index(QL[k])]                        
+        k = k - 1
+    
+    #Update the taboo list
+    j= len(TIL)-1
+    while j >= 0:
+        if TIL[j] == Iteration:
+            Data.tab.RemTab(TL[j], TIL[j]) 
+        j = j - 1
+    
+    if len(c1list) == 0:
+        c1list = list(range(0, Data.Courses_max))
+        for q in QL:
+            del c1list[c1list.index(q)] 
+            
+        c1 = c1list[random.randint(0, len(c1list)-1)]
+    else:
+        c1 = c1list[random.randint(0, len(c1list)-1)]
     
     #Select the working lecture to be re-evaluated at random, using the sol dictionary 
     c1_lectures = list(enumerate(Data.sol[c1]))
@@ -26,19 +58,21 @@ def TimeslotSwapPrep(Data, CurrentObj):
     else:
         c1Null = False
     
-    #Create a candidate list for timeslots based on the course availability Fct and the conflict matrix Chi_cc
+     #Create a candidate list for timeslots based on the course availability Fct and the conflict matrix Chi_cc
     #This section passively ensures timeslot feasibility
-    tlist = []    
+    tlist = []      
     for t in range(Data.total_timeslots):
         
-        Addition = False
-        if Data.F_ct[c1][t] != 1:
+        Addition = True
+        if Data.F_ct[c1][t] == 1:
+            Addition = False
             
-            if sum(Data.timetable[(c1,t,r)] for r in range(Data.rooms_max)) < 1:
+        if sum(Data.timetable[(c1,t,r)] for r in range(Data.rooms_max)) >= 1:
+            Addition = False
 
-                for c in range(Data.Courses_max):
-                    if Data.Chi_cc[c1][c] != 1 and sum(Data.timetable[(c1,t,r)] for r in range(Data.rooms_max)) < 1:
-                        Addition = True
+        for c in range(Data.Courses_max):
+            if Data.Chi_cc[c1][c] == 1 and sum(Data.timetable[(c1,t,r)] for r in range(Data.rooms_max)) >= 1:
+                Addition = False
                
         if Addition == True:
             tlist.append(t)
@@ -47,6 +81,7 @@ def TimeslotSwapPrep(Data, CurrentObj):
     #This section passively ensures room feasibility
     rlist = []
     rPriorityList = []
+    
     for r in range(Data.rooms_max):
         if Data.S_c[c1] <= Data.C_r[r]:
             rlist.append(r)
@@ -58,10 +93,6 @@ def TimeslotSwapPrep(Data, CurrentObj):
                     rPriorityList.append(r)
                     del rlist[rlist.index(r)]
            
-    #print("tlist = ", tlist)
-    #print("rlist = ", rlist)
-    #print("Priority List = ", rPriorityList)
-
     if len(tlist) == 0:
         print("Course ", c1, " cannot be moved to any other timeslot")
         #PLACE THIS COURSE ON A COURSE QUARANTINE LIST
@@ -75,6 +106,7 @@ def TimeslotSwapPrep(Data, CurrentObj):
         CurrentObj, Accepted = TimeslotSwapSelection(Data, rPriorityList, rlist, tlist, c1, c1_index, c1Null, CurrentObj, t_old, r_old)
         if Accepted == False:
             print("Could not move c1 = ", c1)
+            Data.qua.AddQua(c1, Iteration + Data.params['Gamma'])
     else:
         print("Could not move c1 = ", c1)
    

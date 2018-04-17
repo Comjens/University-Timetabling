@@ -28,7 +28,7 @@ Initiaten = [1]
 a = [Setn, Alphan, Betan, Gamman, Deltan, Sigman, Epsilonn, Initiaten]
 initList = list(itertools.product(*a))
 
-'''
+
 def output(PeraFile, params, CurrentObj, Iteration):
     import datetime, os
     Set = params['Set'][-7:-1]

@@ -79,12 +79,3 @@ def SortChiComplexity(data,n2):
     c= a-b
     #print('penalty of', q, '=', b)
     return b
-
-def ComputeWorst(data):
-    #True if the worst is time
-    R= sum(data.room[c][0] for c in range(data.Courses_max))
-    T = sum(data.time1[c][0] for c in range(data.Courses_max))
-    if T>R:
-        return True
-    else:
-        return False

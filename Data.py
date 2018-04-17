@@ -28,13 +28,15 @@ class Data:
     room = None
     time1 = None
 
-    def __init__(self, data, params={'Alpha': 5,
- 'Beta': 1,
- 'Delta': 10,
- 'Epsilon': 0.99995,
- 'Gamma': 10,
- 'Initiate': 1,
- 'Sigma': 5}):
+    def __init__(self, data, params={'Alpha': 30, #length of Diff
+ 'Beta': 15,  #feasibility moves requires,
+ 'Delta': 10, #duration in the tabu
+ 'Epsilon': 0, #FREE PARAMETER
+ 'Gamma': 5, # 'number of iteration we should keep a course difficult to move in the quarantine list'
+ 'Initiate': 1, #FREE PARAMETER
+ 'Sigma': 5,#FREE PARAMETER 
+ 'K': 30, #perturbation length
+ 'sek':15}):
         self.basic = data['basic']
         self.courses = data['courses']
         self.rooms =data['rooms']
@@ -63,8 +65,8 @@ class Data:
                     for Course in range(self.Courses_max)}
         self.BestSol = {Course: [(None, None) for i in range(int(self.courses[Course + 1][2]))]
                         for Course in range(self.Courses_max)}
-        self.tab = Taboo(params['Delta'])
-        self.qua = Qua(30)
+        self.tab = Taboo(100)
+        self.qua = Qua(100)
         self.diff = Diff(params['Alpha'])
         
 

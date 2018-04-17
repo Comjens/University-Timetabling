@@ -8,10 +8,12 @@ from Sort import *
 from OptimValueDelta import *
 from RoomSwapPrep import RoomSwapPrep
 from TimeslotSwapPrep import TimeslotSwapPrep
+from SwapChoice import *
+import math
 
 def output(PeraFile, params, CurrentObj, Iteration):
     import datetime, os
-    Set = params['Set']
+    Set = 'Test02'
     Alpha = params['Alpha']
     Beta = params['Beta']
     Gamma = params['Gamma']
@@ -42,54 +44,61 @@ def output(PeraFile, params, CurrentObj, Iteration):
 # {i:j for i,j in zip(['Alpha', 'Beta', 'Gamma', 'Delta', 'Sigma', 'Epsilon', 'Initiate'],)}
 PeraFile = "TestCasesAdvancedSwap"
 
-while True:   
-    DIR = "Data/Test{:02}/".format(random.randint(1,13))
-    
-    files = file_names(DIR)
-    datau = Data(read_file(DIR,files))
-    datau.params["Set"] = DIR[-7:-1]
-    print(datau.params["Set"])
-    Set_para(datau)
-    print(Set_obj(datau))
-    #print(data.sol,"\n\n\n\n")
-    #print('#courses;', data.Courses_max,'\n#rooms:', data.rooms_max,'\n#timeslots:',data.total_timeslots) 
-    InitPop_roomsVsStudents(datau)
-    InitPop(datau)
-    CurrentObj = Set_obj(datau)
-    InitialObj = CurrentObj
-    datau.BestObj = 9999999
-    print(CurrentObj)
-    
-    verystart=time.time()
-    import math
-    
-    Iteration = 0
-    
-    verystart=time.time()
-    
+#while True:   
+verystart=time.time()
 
-    while (time.time()- verystart) <= 300:
-        print(datau.params["Set"])
-        start = time.time()
-        Iteration = Iteration + 1
-        print("ITERATION = ", Iteration)
-        
+DIR = "C:/Users/james.david/Desktop/Research/02_Denmark/01_DTU - Industrial Engineering Management/Semesters/Winter 2018/42137 - Optimization using Metaheuristics/00_Project/Test Data/Test02/"
+
+files = file_names(DIR)
+datau = Data(read_file(DIR,files))
+
+Set_params(datau)
+InitPop_roomsVsStudents(datau)
+print("Initial Objective = ", Set_obj(datau, datau.timetable))
+InitPop(datau)
+
+CurrentObj = Set_obj(datau,datau.timetable)
+InitialObj = CurrentObj
+datau.BestObj = 9999999
+print("Secondary Objective = ", CurrentObj)
+
+Iteration = 0
+
+for i in datau.sol.keys():
+    for j in datau.sol[i]:
+        try:
+            sol_i = {"course": i, "day": math.floor(j[0] / datau.days_max), "period": j[0] % datau.days_max,
+                "room": j[1]}
+            print("C{course:04} {day} {period} R{room:04}".format(**sol_i))
+        except:
+            pass
+
+while (time.time()- verystart) <= 500:
+    start = time.time()
+    Iteration = Iteration + 1
+    print("ITERATION = ", Iteration)
+    
+    TimePenalty, RoomPenalty = ComputeWorst(datau)
+    print("Time Penalty = {:.4}".format(TimePenalty))
+    print("Room Penalty = {}".format(RoomPenalty))
+    
+    if TimePenalty > RoomPenalty:
+        CurrentObj = TimeslotSwapPrep(datau, CurrentObj, Iteration)
+    else:
         CurrentObj = RoomSwapPrep(datau, CurrentObj, Iteration)
-        
-        #CurrentObj, Iteration = BasicSwapAsp(datau, CurrentObj, Iteration)
     
-        print("Iteration Runtime: {:.5} s\n".format(time.time()-start))
-        print("Total Runtime: {:.5} s\n".format(time.time()-verystart))
-           
-    output(PeraFile, datau.params, datau.BestObj, Iteration)
+    print("Iteration Runtime: {:.5} s\n".format(time.time()-start))
+    print("Total Runtime: {:.5} s\n".format(time.time()-verystart))
+       
+output(PeraFile, datau.params, datau.BestObj, Iteration)  
 
-    for i in datau.BestSol.keys():
-        for j in datau.sol[i]:
-            try:
-                sol_i = {"course": i, "day": math.floor(j[0] / datau.days_max), "period": j[0] % datau.days_max,
-                    "room": j[1]}
-                print("C{course:04} {day} {period} R{room:04}".format(**sol_i))
-            except:
-                pass
+for i in datau.sol.keys():
+    for j in datau.sol[i]:
+        try:
+            sol_i = {"course": i, "day": math.floor(j[0] / datau.days_max), "period": j[0] % datau.days_max,
+                "room": j[1]}
+            print("C{course:04} {day} {period} R{room:04}".format(**sol_i))
+        except:
+            pass
 
-    print(datau.params["Set"])
+    

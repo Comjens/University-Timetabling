@@ -75,14 +75,13 @@ def InitPop(data):
                     
                     
 def InitPop_roomsVsStudents(data):
-    sek =15
     import random
     from itertools import product
     from FeasibilityCheck import Feasibility_Check
     Placements = 0
     courses = list(range(0, data.Courses_max))
     times =[i for i in range(data.total_timeslots)]
-    print(times)
+    #print(times)
     MinCriteria = min(data.rooms_max * data.total_timeslots, sum([len(data.sol[i]) for i in data.sol]))
     Sorted_list_room = [(data.C_r[r], r) for r in range(data.rooms_max)]
     Sorted_list_c = [(data.S_c[c], c) for c in range(data.Courses_max)]
@@ -92,7 +91,7 @@ def InitPop_roomsVsStudents(data):
     # Sorted_list_t = [(sum([i[t] for i in data.F_ct]), t) for t in range(data.total_timeslots)]
     # Sorted_list_t.sort()
     start = time.time()
-    while time.time()-start < sek:
+    while time.time()-start < data.params['sek']:
 
         # Define the initial entry'
         try:
@@ -148,9 +147,9 @@ def InitPop_roomsVsStudents(data):
                         data.timetable[c1, t1, r1] = 1
                         Placements = Placements + 1
                         break
-                    if time.time() - start > sek:
+                    if time.time() - start > data.params['sek']:
                         break
                     i+=1
-                if Feasibility == True or time.time()-start > sek:
+                if Feasibility == True or time.time()-start > data.params['sek']:
                     break
 

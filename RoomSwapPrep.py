@@ -18,6 +18,9 @@ def RoomSwapPrep(Data, CurrentObj, Iteration):
     
     QL = Data.qua.QL
     IL = Data.qua.IL
+    TL = Data.tab.TL
+    TIL = Data.tab.TIL
+    
     print("QL = ", QL)
 
     #Update the quarantine list
@@ -25,11 +28,18 @@ def RoomSwapPrep(Data, CurrentObj, Iteration):
     while k >= 0:
         if IL[k] == Iteration:
             Data.qua.RemQua(QL[k], IL[k])
-            #Data.qua.RemTab(TL[k], TIL[k])
-        else:
+        elif QL[k] in c1list:
             del c1list[c1list.index(QL[k])]                        
         k = k - 1
     
+    #Update the taboo list
+    j= len(TIL)-1
+    while j >= 0:
+        if TIL[j] == Iteration:
+            Data.tab.RemTab(TL[j], TIL[j]) 
+        j = j - 1
+    
+    #If the list is empty after being processed by the quarantine
     if len(c1list) == 0:
         c1list = list(range(0, Data.Courses_max))
         for q in QL:
@@ -97,7 +107,7 @@ def RoomSwapPrep(Data, CurrentObj, Iteration):
         CurrentObj, Accepted = RoomSwapSelection(Data, rPriorityList, rlist, tlist, c1, c1_index, c1Null, CurrentObj, t_old, r_old)
         if Accepted == False:
             print("Could not move c1 = ", c1)
-            Data.qua.AddQua(c1, Iteration + 5)
+            Data.qua.AddQua(c1, Iteration + Data.params['Gamma'])
     else:
         print("Could not move c1 = ", c1)
    

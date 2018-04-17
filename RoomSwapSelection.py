@@ -11,7 +11,7 @@ import copy
 
 def RoomSwapSelection(Data, rPriorityList, rlist, tlist, c1, c1_index, c1Null, CurrentObj, t_old, r_old):
     FeasCount = 0
-    FeasMax = 30
+    FeasMax = Data.params['Beta']
     ObjectiveList = []
     
     if len(rPriorityList) == 0:
@@ -48,69 +48,74 @@ def RoomSwapSelection(Data, rPriorityList, rlist, tlist, c1, c1_index, c1Null, C
                 
                 #Check if a course already exists in the target room durng timeslot t1
                 c2Null = True
+                c2 = None
                 for c in range(Data.Courses_max):
                     if Data.timetable[(c, t1, r)] != 0:
                         c2Null = False
                         c2 = c
                 
-                if c2Null == False and c1Null == False:
-                    Data.timetable[(c1, t_old, r_old)] = 0
-                    Data.timetable[(c2, t1, r)] = 0
-                    
-                    #Check the feasibility of the moves
-                    if Feasibility_Check(c2, t_old, r_old, Data) and Feasibility_Check(c1, t1, r, Data):
-                        FeasCount = FeasCount + 1
+                if c2 not in Data.qua.QL:                        
+                    if c2Null == False and c1Null == False:
+                        Data.timetable[(c1, t_old, r_old)] = 0
+                        Data.timetable[(c2, t1, r)] = 0
                         
-                        Data.timetable[(c1, t_old, r_old)] = 1
-                        Data.timetable[(c2, t1, r)] = 1
+                        #Check the feasibility of the moves
+                        if Feasibility_Check(c2, t_old, r_old, Data) and Feasibility_Check(c1, t1, r, Data):
+                            FeasCount = FeasCount + 1
+                            
+                            Data.timetable[(c1, t_old, r_old)] = 1
+                            Data.timetable[(c2, t1, r)] = 1
+                            
+                            #Calculate the provisional objective
+                            Obj = Set_obj_delta(Data, ((c2, t1, r),(c2, t_old, r_old)), ((c1, t_old, r_old),(c1, t1, r)))  
+                            ObjectiveList.append((Obj, t1, r, c2Null, c2))
+                            
+                            if FeasCount == FeasMax:
+                                break     
+                        else:
+                            Data.timetable[(c1, t_old, r_old)] = 1
+                            Data.timetable[(c2, t1, r)] = 1
+                            
+                    elif c2Null == False and c1Null == True:
+                        Data.timetable[(c2, t1, r)] = 0
                         
-                        #Calculate the provisional objective
-                        Obj = Set_obj_delta(Data, ((c2, t1, r),(c2, t_old, r_old)), ((c1, t_old, r_old),(c1, t1, r)))  
-                        ObjectiveList.append((Obj, t1, r, c2Null, c2))
+                        if Feasibility_Check(c1, t1, r, Data):
+                            #Feasibility is always possible for drops (c2), feasibility is passively ensured already for c1
+                            FeasCount = FeasCount + 1
+                            
+                            Data.timetable[(c2, t1, r)] = 1
+                            
+                            #Calculate the provisional objective
+                            Obj = Set_obj_delta(Data, ((c2, t1, r),(c2, t_old, r_old)), ((c1, t_old, r_old),(c1, t1, r)))  
+                            ObjectiveList.append((Obj, t1, r, c2Null, c2))
+                            
+                            if FeasCount == FeasMax:
+                                break     
+                        else:
+                            Data.timetable[(c2, t1, r)] = 1
+                            
+                    elif c2Null == True and c1Null == False:
+                        Data.timetable[(c1, t_old, r_old)] = 0
                         
-                        if FeasCount == FeasMax:
-                            break     
+                        if Feasibility_Check(c1, t1, r, Data):
+                            FeasCount = FeasCount + 1
+                            
+                            Data.timetable[(c1, t_old, r_old)] = 1
+                            
+                            #Calculate the provisional objective
+                            Obj = Set_obj_delta(Data, ((c1, t_old, r_old),(c1, None, None)), ((c1, None, None),(c1, t1, r)))
+                            ObjectiveList.append((Obj, t1, r, c2Null, None))
+                            
+                            if FeasCount == FeasMax:
+                                break 
+                        else:
+                            Data.timetable[(c1, t_old, r_old)] = 1
                     else:
-                        Data.timetable[(c1, t_old, r_old)] = 1
-                        Data.timetable[(c2, t1, r)] = 1
-                        
-                elif c2Null == False and c1Null == True:
-                    Data.timetable[(c2, t1, r)] = 0
-                    
-                    if Feasibility_Check(c1, t1, r, Data):
-                        #Feasibility is always possible for drops (c2), feasibility is passively ensured already for c1
-                        FeasCount = FeasCount + 1
-                        
-                        Data.timetable[(c2, t1, r)] = 1
-                        
-                        #Calculate the provisional objective
-                        Obj = Set_obj_delta(Data, ((c2, t1, r),(c2, t_old, r_old)), ((c1, t_old, r_old),(c1, t1, r)))  
-                        ObjectiveList.append((Obj, t1, r, c2Null, c2))
-                        
-                        if FeasCount == FeasMax:
-                            break     
-                    else:
-                        Data.timetable[(c2, t1, r)] = 1
+                        print("Attempted an EMPTY - EMPTY swap")
                 else:
-                    Data.timetable[(c1, t_old, r_old)] = 0
-                    
-                    if Feasibility_Check(c1, t1, r, Data):
-                        FeasCount = FeasCount + 1
-                        
-                        Data.timetable[(c1, t_old, r_old)] = 1
-                        
-                        #Calculate the provisional objective
-                        Obj = Set_obj_delta(Data, ((c1, t_old, r_old),(c1, None, None)), ((c1, None, None),(c1, t1, r)))
-                        ObjectiveList.append((Obj, t1, r, c2Null, None))
-                        
-                        if FeasCount == FeasMax:
-                            break 
-                    else:
-                        Data.timetable[(c1, t_old, r_old)] = 1
-                        
+                     print("The existing c2 = ", c2, " is in quarantine!")
     
     Accepted = False
-    
     if len(ObjectiveList) == 0:
         print("No feasible solutions found")
     else:
@@ -159,7 +164,7 @@ def RoomSwapSelection(Data, rPriorityList, rlist, tlist, c1, c1_index, c1Null, C
                     print("(c2, t1, r1) = ", c2, t1, r1)
                     print("Performed NULL SWAP operation")
                     
-                else:
+                elif c2Null and not c1Null:
                     Data.timetable[(c1, t_old, r_old)] = 0
                     Data.timetable[(c1, t1, r1)] = 1     
                     
@@ -186,7 +191,7 @@ def RoomSwapSelection(Data, rPriorityList, rlist, tlist, c1, c1_index, c1Null, C
                     Data.sol[c2][(Data.sol[c2]).index((t1, r1))] = (t_old, r_old)
                     
                     Data.tab.AddTab((c1, t_old, r_old), Data)
-                    Data.tab.AddTab((c2, t1, r1), Data)
+                    Data.tab.AddTab((c2, t1, r1), Data)  
                     
                     print("(c2, t1, r1) = ", c2, t1, r1)
                     print("Performed STANDARD SWAP operation")
@@ -208,7 +213,7 @@ def RoomSwapSelection(Data, rPriorityList, rlist, tlist, c1, c1_index, c1Null, C
                     
                     Accepted = True
                     
-                elif not Data.tab.CheckTab((c1, t1, r1)):
+                elif c2Null and not c1Null and not Data.tab.CheckTab((c1, t1, r1)):
                     Data.timetable[(c1, t_old, r_old)] = 0
                     Data.timetable[(c1, t1, r1)] = 1     
                     
@@ -233,4 +238,3 @@ def RoomSwapSelection(Data, rPriorityList, rlist, tlist, c1, c1_index, c1Null, C
         print("Current Objective = ", CurrentObj)   
     
     return CurrentObj, Accepted
-
