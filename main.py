@@ -69,6 +69,7 @@ while True:
     
 
     while (time.time()- verystart) <= 300:
+        print(datau.params["Set"])
         start = time.time()
         Iteration = Iteration + 1
         print("ITERATION = ", Iteration)
@@ -90,5 +91,5 @@ while True:
                 print("C{course:04} {day} {period} R{room:04}".format(**sol_i))
             except:
                 pass
-    
-    
+
+    print(datau.params["Set"])
