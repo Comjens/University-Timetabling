@@ -11,7 +11,7 @@ from TimeslotSwapPrep import TimeslotSwapPrep
 
 def output(PeraFile, params, CurrentObj, Iteration):
     import datetime, os
-    Set = 'Test02'
+    Set = params['Set']
     Alpha = params['Alpha']
     Beta = params['Beta']
     Gamma = params['Gamma']
@@ -43,18 +43,19 @@ def output(PeraFile, params, CurrentObj, Iteration):
 PeraFile = "TestCasesAdvancedSwap"
 
 while True:   
-    DIR = "Data/Test02/"
+    DIR = "Data/Test{:02}/".format(random.randint(1,13))
     
     files = file_names(DIR)
     datau = Data(read_file(DIR,files))
-    
-    Set_params(datau)
-    
+    datau.params["Set"] = DIR[-7:-1]
+    print(datau.params["Set"])
+    Set_para(datau)
+    print(Set_obj(datau))
     #print(data.sol,"\n\n\n\n")
     #print('#courses;', data.Courses_max,'\n#rooms:', data.rooms_max,'\n#timeslots:',data.total_timeslots) 
+    InitPop_roomsVsStudents(datau)
     InitPop(datau)
-    
-    CurrentObj = Set_obj(datau,datau.timetable)
+    CurrentObj = Set_obj(datau)
     InitialObj = CurrentObj
     datau.BestObj = 9999999
     print(CurrentObj)
@@ -66,7 +67,7 @@ while True:
     
     verystart=time.time()
     
-    
+
     while (time.time()- verystart) <= 300:
         start = time.time()
         Iteration = Iteration + 1
@@ -79,15 +80,15 @@ while True:
         print("Iteration Runtime: {:.5} s\n".format(time.time()-start))
         print("Total Runtime: {:.5} s\n".format(time.time()-verystart))
            
-    output(PeraFile, datau.params, datau.BestObj, Iteration)   
-    
-    '''for i in datau.sol.keys():
+    output(PeraFile, datau.params, datau.BestObj, Iteration)
+
+    for i in datau.BestSol.keys():
         for j in datau.sol[i]:
             try:
                 sol_i = {"course": i, "day": math.floor(j[0] / datau.days_max), "period": j[0] % datau.days_max,
                     "room": j[1]}
                 print("C{course:04} {day} {period} R{room:04}".format(**sol_i))
             except:
-                pass'''
+                pass
     
     

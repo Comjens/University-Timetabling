@@ -34,12 +34,30 @@ def Set_obj_delta(data, swap1, swap2):
             V_tr[t][r] = max(0, sum(temp_set_ctr[c][t][r]*data.S_c[c] for c in range(data.Courses_max)) - data.C_r[r])
 
     # determines if a curriculum in a time slot has a secluded lecture i.e. there is no adjacent lecture from the same curriculum
-    A_qt = [[0 for t in range(data.total_timeslots)] for q in range(data.Curricula_max)]
+    import numpy as np
+    temp_set_tcr = np.array(
+        [[[temp_set_ctr [c][t][r] for r in range(data.rooms_max)] for c in range(data.Courses_max)] for t in
+         range(data.total_timeslots)], dtype=int)
+    one = np.ones((1, data.rooms_max))
+    C_q = np.zeros((data.Curricula_max, data.Courses_max))
+    for i, j in data.relation[1:]:
+        C_q[int(i[1:]), int(j[1:])] = 1
+    T_d = [[time for time in range(data.Periods_per_day * i, data.Periods_per_day * (i + 1))] for i in
+           range(data.days_max)]
+
+    T_tt = np.array([[0 for t in range(data.total_timeslots)] for t1 in range(data.total_timeslots)])
+    for d in range(data.days_max):
+        for t in T_d[d]:
+            if t < max(T_d[d]) - 1:
+                T_tt[t][t + 1] = 1
+    sol = np.dot(C_q, temp_set_tcr) @ one.T
+    # sol2 = (1 - sol[:, :, 0]) @ ( T_tt)# + (1 - T_tt.T))
+    A_qt = np.zeros((data.Curricula_max, data.total_timeslots))
     for q in range(data.Curricula_max):
         for t in range(data.total_timeslots):
-            if sum(temp_set_ctr[c][t][r] for r in range(data.rooms_max) for c in data.C_q[q]) == 1:
-                if sum(temp_set_ctr[c][t2][r] for c in data.C_q[q] for r in
-                       range(data.rooms_max) for t2 in range(data.total_timeslots) if data.T_tt[t][t2] == 1 or data.T_tt[t2][t] == 1) == 0:
+            if sol[q, t]:
+                if sum(data.timetable[(c, t2, r)] for c in data.C_q[q] for r in range(data.rooms_max) for t2 in
+                       range(data.total_timeslots) if data.T_tt[t][t2] == 1 or data.T_tt[t2][t] == 1) == 0:
                     A_qt[q][t] = 1
 
     # The number of room changes (number of violations of the room stability) by a course c ∈ C is calculated by the function Pc (x):
@@ -52,5 +70,5 @@ def Set_obj_delta(data, swap1, swap2):
 
     obj = sum(5 * Workingdays_c[c] + 10 * Unplanned_c[c] + P_c[c] for c in range(data.Courses_max))\
     + sum(V_tr[t][r] for t in range(data.total_timeslots) for r in range(data.rooms_max))\
-    + 2 * sum(A_qt[q][t] for q in range(data.Curricula_max) for t in range(data.total_timeslots))
+    + 2 * np.sum(A_qt[q][t])
     return obj
