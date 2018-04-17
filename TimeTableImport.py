@@ -49,7 +49,7 @@ def Set_params(data):
     T_tt = [[0 for t in range(data.total_timeslots)] for t1 in range(data.total_timeslots)]
     for d in range(data.days_max):
         for t in T_d[d]:
-            if t<max(T_d[d])-1:
+            if t<max(T_d[d]):
                 T_tt[t][t+1]=1 
         
     Chi_cc= [[0 for c in range(data.Courses_max)] for c1 in range(data.Courses_max)]

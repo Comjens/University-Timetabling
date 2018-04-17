@@ -18,11 +18,11 @@ def SortRoomDomain(data,k):
     return [A[i][1] for i in range(0,val+1)] 
     
               
-def SortTimeDomain(data,k):
-    A=[0 for c in range(data.Courses_max)]
+'''def SortTimeDomain(data,k):
+    Adata.time=[0 for c in range(data.Courses_max)]
     for q in range(data.Curricula_max):
         for c in (data.C_q[q]):
-            A[c] = (sum(data.A_qt[q][t] for t in range(data.total_timeslots))+data.Workingdays_c[c],c)
+            data.time[c] = (sum(data.A_qt[q][t] for t in range(data.total_timeslots))+data.Workingdays_c[c],c)
     A.sort(reverse=True)
     Valuelimit= (A[0][0]-A[data.Courses_max-1][0])*(1-k)
     val=0
@@ -31,26 +31,60 @@ def SortTimeDomain(data,k):
             val=i
         else:
             break
+    return [A[i][1] for i in range(0,val+1)]
+    
+def SortRoomDomain(data,k):
+    A=data.room
+    A.sort(reverse=True)
+    
+    Valuelimit = (A[0][0]-A[data.Courses_max-1][0])*(1-k)
+    val=0
+    for i in range(data.Courses_max):
+        if A[i][0] > Valuelimit:
+            val=i
+        else:
+            break
     return [A[i][1] for i in range(0,val+1)] 
+
+def SortTimeDomain(data,k):
+    A=data.time1
+    A.sort(reverse=True)
+    Valuelimit= (A[0][0]-A[data.Courses_max-1][0])*(1-k)
+    val=0
+    for i in range(data.Courses_max):
+        if A[i][0] > Valuelimit:
+            val=i
+        else:
+            break
+    return [A[i][1] for i in range(0,val+1)]'''
 
 def SortBoth(data):
     A1=[0 for c in range(data.Courses_max)]
-    for q in range(data.Curricula_max):
-        for c in (data.C_q[q]):
-            A1[c] = (sum(data.A_qt[q][t] for t in range(data.total_timeslots))  +  data.Workingdays_c[c]  +  data.P_c[c]  +  sum(data.V_trc[t][r][c] for t in range(data.total_timeslots) for r in range(data.rooms_max)),c)
+    for c in (data.C_q[q]):
+        A1[c] = (data.room[c] + data.time1[c] ,c)
     A1.sort(reverse=True)
     return [i[1] for i in A1] 
 
 def SortChiComplexity(data,n2):
+    q,w,e = n2
     Conf= [0 for c in range(data.Courses_max)]
     for c in range(data.Courses_max):
         Conf[c]=(data.Conflicting_c[c],c)
     Conf.sort(reverse=True)
     b=0
     for c in range(data.Courses_max):
-        if Conf[c][1]==n2:
+        if Conf[c][1]==q:
             b=Conf[c][0]
     a = Conf[0][0]-Conf[data.Courses_max-1][0]
     c= a-b
+    #print('penalty of', q, '=', b)
     return b
 
+def ComputeWorst(data):
+    #True if the worst is time
+    R= sum(data.room[c][0] for c in range(data.Courses_max))
+    T = sum(data.time1[c][0] for c in range(data.Courses_max))
+    if T>R:
+        return True
+    else:
+        return False

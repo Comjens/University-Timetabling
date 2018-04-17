@@ -20,12 +20,13 @@ class Data:
     Unplanned_c=None
     Workingdays_c=0
     V_tr = None
-    V_trc = None
     A_qt = None
     T_tt = None
     Chi_cc = None
     Conflicting_c = None
     BestObj = None
+    room = None
+    time1 = None
 
     def __init__(self, data, params={'Alpha': 5,
  'Beta': 1,
@@ -123,9 +124,9 @@ class Data:
         assert isinstance(V_tr, list)
         self.V_tr = V_tr
         
-    def set_V_trc(self,V_trc):
+    '''def set_V_trc(self,V_trc):
         assert isinstance(V_trc, list)
-        self.V_trc = V_trc
+        self.V_trc = V_trc'''
     
     def set_A_qt(self,A_qt):
         assert isinstance(A_qt, list)
@@ -139,7 +140,13 @@ class Data:
         assert isinstance(P_c, list)
         self.P_c = P_c
         
-
+    def set_room(self,room):
+        assert isinstance(room, list)
+        self.room = room
+        
+    def set_time1(self,time1):
+        assert isinstance(time1, list)
+        self.time1 = time1
 
         
 

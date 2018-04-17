@@ -10,10 +10,10 @@ import copy
 from OptimValueDelta import Set_obj_delta
 from FeasibilityCheck import Feasibility_Check
 
-def BasicSwapAsp(datau, CurrentObj, Iteration):
+def BasicSwapAsp(Data, CurrentObj, Iteration):
     
     #Initiate the c1 candidate list
-    c1list = list(range(0, datau.Courses_max))
+    c1list = list(range(0, Data.Courses_max))
     ObjectiveList = []
     FeasMax = 30
     FeasCount = 0
@@ -22,7 +22,7 @@ def BasicSwapAsp(datau, CurrentObj, Iteration):
     c1 = c1list[random.randint(0, len(c1list) - 1)]
     
     #Choose the lecture in the sol dictionary that will be assessed
-    c1_lectures = list(enumerate(datau.sol[c1]))
+    c1_lectures = list(enumerate(Data.sol[c1]))
     local_index = random.randint(0, len(c1_lectures)-1)
     c1_index, (t_old, r_old) = c1_lectures[local_index]
     
@@ -33,7 +33,7 @@ def BasicSwapAsp(datau, CurrentObj, Iteration):
     
     print("(c1, t_old, r_old) = ", c1, t_old, r_old)
         
-    Possibilities = list(product(list(range(datau.total_timeslots)), list(range(datau.rooms_max))))
+    Possibilities = list(product(list(range(Data.total_timeslots)), list(range(Data.rooms_max))))
     
     while len(Possibilities) != 0 and FeasCount != FeasMax:
         
@@ -44,147 +44,194 @@ def BasicSwapAsp(datau, CurrentObj, Iteration):
         
         #Check if a course already exists in the target room durng timeslot t1
         c2Null = True
-        for c in range(datau.Courses_max):
-            if datau.timetable[(c, t1, r1)] != 0:
+        for c in range(Data.Courses_max):
+            if Data.timetable[(c, t1, r1)] != 0:
                 c2Null = False
                 c2 = c
         
         if c2Null == False and c1Null == False:
-            datau.timetable[(c1, t_old, r_old)] = 0
-            datau.timetable[(c2, t1, r1)] = 0
+            Data.timetable[(c1, t_old, r_old)] = 0
+            Data.timetable[(c2, t1, r1)] = 0
             
             #Check the feasibility of the moves
-            if Feasibility_Check(c1, t1, r1, datau) and Feasibility_Check(c2, t_old, r_old, datau):
+            if Feasibility_Check(c2, t_old, r_old, Data) and Feasibility_Check(c1, t1, r1, Data):
                 FeasCount = FeasCount + 1
                 
-                datau.timetable[(c1, t_old, r_old)] = 1
-                datau.timetable[(c2, t1, r1)] = 1
+                Data.timetable[(c1, t_old, r_old)] = 1
+                Data.timetable[(c2, t1, r1)] = 1
                 
                 #Calculate the provisional objective
-                Obj = Set_obj_delta(datau,((c2, t1, r1),(c2, t_old, r_old)), ((c1, t_old, r_old),(c1, t1, r1)))  
+                Obj = Set_obj_delta(Data, ((c2, t1, r1),(c2, t_old, r_old)), ((c1, t_old, r_old),(c1, t1, r1)))  
                 ObjectiveList.append((Obj, t1, r1, c2Null, c2))
                 
+                if FeasCount == FeasMax:
+                    break     
             else:
-                datau.timetable[(c1, t_old, r_old)] = 1
-                datau.timetable[(c2, t1, r1)] = 1
+                Data.timetable[(c1, t_old, r_old)] = 1
+                Data.timetable[(c2, t1, r1)] = 1
                 
         elif c2Null == False and c1Null == True:
-            datau.timetable[(c2, t1, r1)] = 0
+            Data.timetable[(c2, t1, r1)] = 0
             
-            #Check the feasibility of the moves
-            if Feasibility_Check(c1, t1, r1, datau):
+            if Feasibility_Check(c1, t1, r1, Data):
+                #Feasibility is always possible for drops (c2), feasibility is passively ensured already for c1
                 FeasCount = FeasCount + 1
                 
-                datau.timetable[(c2, t1, r1)] = 1
+                Data.timetable[(c2, t1, r1)] = 1
                 
                 #Calculate the provisional objective
-                Obj = Set_obj_delta(datau, ((c2, t1, r1),(c2, t_old, r_old)), ((c1, t_old, r_old),(c1, t1, r1)))  
+                Obj = Set_obj_delta(Data, ((c2, t1, r1),(c2, t_old, r_old)), ((c1, t_old, r_old),(c1, t1, r1)))  
                 ObjectiveList.append((Obj, t1, r1, c2Null, c2))
                 
+                if FeasCount == FeasMax:
+                    break     
             else:
-                datau.timetable[(c2, t1, r1)] = 1
+                Data.timetable[(c2, t1, r1)] = 1
         else:
-            if Feasibility_Check(c1, t1, r1, datau):
+            Data.timetable[(c1, t_old, r_old)] = 0
+            
+            if Feasibility_Check(c1, t1, r1, Data):
                 FeasCount = FeasCount + 1
                 
+                Data.timetable[(c1, t_old, r_old)] = 1
+                
                 #Calculate the provisional objective
-                Obj = Set_obj_delta(datau, ((c1, t_old, r_old),(c1, None, None)), ((c1, None, None),(c1, t1, r1)))
+                Obj = Set_obj_delta(Data, ((c1, t_old, r_old),(c1, None, None)), ((c1, None, None),(c1, t1, r1)))
                 ObjectiveList.append((Obj, t1, r1, c2Null, None))
-                        
-    #Perform the best swap discovered
-    ObjectiveList.sort(key=lambda elem: elem[0])
-    
+                
+                if FeasCount == FeasMax:
+                    break 
+            else:
+                Data.timetable[(c1, t_old, r_old)] = 1
+                       
     Accepted = False
-    Obj_index = 0
     
-    #Iterate until we can perform a move
-    while not Accepted:
+    if len(ObjectiveList) == 0:
+        print("No feasible solutions found")
+    else:
+        #Perform the best swap discovered
+        ObjectiveList.sort(key=lambda elem: elem[0])
+        Obj_index = 0
         
-        CurrentObj, t1, r1, c2Null, c2 = ObjectiveList[Obj_index]
-        
-        if CurrentObj < datau.BestObj:
-            print("NEW BEST!")
-            Accepted = True
+        #Iterate until we can perform a move
+        while not Accepted:
             
-            if not c2Null:
-                datau.timetable[(c1, t_old, r_old)] = 0
-                datau.timetable[(c2, t1, r1)] = 0
-                datau.timetable[(c1, t1, r1)] = 1
-                datau.timetable[(c2, t_old, r_old)] = 1
+            if Obj_index == len(ObjectiveList):
+                print("Could not perform a successful swap due to the taboo list")
+                break
+            
+            CurrentObj, t1, r1, c2Null, c2 = ObjectiveList[Obj_index]
+            
+            if CurrentObj < Data.BestObj:
+                print("NEW BEST!")
+                Accepted = True
                 
-                datau.sol[c1][c1_index] = (t1, r1)
-                datau.sol[c2][(datau.sol[c2]).index((t1, r1))] = (t_old, r_old)
-                
-                if not datau.tab.CheckTab((c2, t_old, r_old, datau)):
-                    datau.tab.AddTab((c2, t_old, r_old), datau)
+                if not c2Null and not c1Null:
+                    Data.timetable[(c1, t_old, r_old)] = 0
+                    Data.timetable[(c2, t1, r1)] = 0
+                    Data.timetable[(c1, t1, r1)] = 1
+                    Data.timetable[(c2, t_old, r_old)] = 1
                     
-                if not datau.tab.CheckTab((c1, t1, r1, datau)):
-                    datau.tab.AddTab((c1, t1, r1), datau)
+                    Data.sol[c1][c1_index] = (t1, r1)
+                    Data.sol[c2][(Data.sol[c2]).index((t1, r1))] = (t_old, r_old)
+                    
+                    Data.tab.AddTab((c1, t_old, r_old), Data)
+                    Data.tab.AddTab((c2, t1, r1), Data)            
+                    
+                    print("(c2, t1, r1) = ", c2, t1, r1)
+                    print("Performed STANDARD SWAP operation")
+                    
+                elif not c2Null and c1Null:
+                    Data.timetable[(c2, t1, r1)] = 0
+                    Data.timetable[(c1, t1, r1)] = 1
+                    
+                    Data.sol[c1][c1_index] = (t1, r1)
+                    Data.sol[c2][(Data.sol[c2]).index((t1, r1))] = (t_old, r_old)
+                    
+                    Data.tab.AddTab((c1, t_old, r_old), Data)
+                    Data.tab.AddTab((c2, t1, r1), Data)
+                    
+                    print("(c2, t1, r1) = ", c2, t1, r1)
+                    print("Performed NULL SWAP operation")
+                    
+                else:
+                    Data.timetable[(c1, t_old, r_old)] = 0
+                    Data.timetable[(c1, t1, r1)] = 1     
+                    
+                    Data.sol[c1][c1_index] = (t1, r1)
+                    
+                    Data.tab.AddTab((c1, t_old, r_old), Data)
+                    
+                    print("(c1, t1, r1) = ", c1, t1, r1)
+                    print("Performed MOVE operation")
                 
-                print("(c2, t1, r1) = ", c2, t1, r1)
-                print("Performed SWAP operation")
-            
-            else:
-                datau.timetable[(c1, t_old, r_old)] = 0
-                datau.timetable[(c1, t1, r1)] = 1     
-                
-                datau.sol[c1][c1_index] = (t1, r1)
-                
-                if not datau.tab.CheckTab((c1, t1, r1, datau)):
-                    datau.tab.AddTab((c1, t1, r1), datau)
-                
-                print("(c1, t1, r1) = ", c1, t1, r1)
-                print("Performed MOVE operation")
-            
-            datau.BestObj = CurrentObj
-            datau.BestSol = copy.deepcopy(datau.sol)
-            
-        else:
-            print("Kept previous objective")
-            
-            if not c2Null and not datau.tab.CheckTab((c2, t_old, r_old, datau)) and not datau.tab.CheckTab((c1, t1, r1, datau)):
-                datau.timetable[(c1, t_old, r_old)] = 0
-                datau.timetable[(c2, t1, r1)] = 0
-                datau.timetable[(c1, t1, r1)] = 1
-                datau.timetable[(c2, t_old, r_old)] = 1
-                
-                datau.sol[c1][c1_index] = (t1, r1)
-                datau.sol[c2][(datau.sol[c2]).index((t1, r1))] = (t_old, r_old)
-                
-                datau.tab.AddTab((c1, t1, r1), datau)
-                datau.tab.AddTab((c2, t_old, r_old), datau)
-                
-                print("(c2, t1, r1) = ", c2, t1, r1)
-                print("Performed SWAP operation")
-                
-                Accepted = True
-                
-            elif not datau.tab.CheckTab((c1, t1, r1, datau)):
-                datau.timetable[(c1, t_old, r_old)] = 0
-                datau.timetable[(c1, t1, r1)] = 1     
-                
-                datau.sol[c1][c1_index] = (t1, r1)
-                
-                datau.tab.AddTab((c1, t1, r1), datau)
-                
-                print("(c1, t1, r1) = ", c1, t1, r1)
-                print("Performed MOVE operation")
-                
-                Accepted = True
+                Data.BestObj = CurrentObj
+                Data.BestSol = copy.deepcopy(Data.sol)
                 
             else:
-                print("Proposed a TABOO move, recoursing to a different entry")
+                print("Kept previous objective")
+                
+                if not c2Null and not c1Null and not Data.tab.CheckTab((c2, t_old, r_old)) and not Data.tab.CheckTab((c1, t1, r1)):
+                    Data.timetable[(c1, t_old, r_old)] = 0
+                    Data.timetable[(c2, t1, r1)] = 0
+                    Data.timetable[(c1, t1, r1)] = 1
+                    Data.timetable[(c2, t_old, r_old)] = 1
+                    
+                    Data.sol[c1][c1_index] = (t1, r1)
+                    Data.sol[c2][(Data.sol[c2]).index((t1, r1))] = (t_old, r_old)
+                    
+                    Data.tab.AddTab((c1, t_old, r_old), Data)
+                    Data.tab.AddTab((c2, t1, r1), Data)
+                    
+                    print("(c2, t1, r1) = ", c2, t1, r1)
+                    print("Performed STANDARD SWAP operation")
+                    
+                    Accepted = True
+                    
+                elif not c2Null and c1Null and not Data.tab.CheckTab((c2, t_old, r_old)) and not Data.tab.CheckTab((c1, t1, r1)):
+                    Data.timetable[(c2, t1, r1)] = 0
+                    Data.timetable[(c1, t1, r1)] = 1
+                    
+                    Data.sol[c1][c1_index] = (t1, r1)
+                    Data.sol[c2][(Data.sol[c2]).index((t1, r1))] = (t_old, r_old)
+                    
+                    Data.tab.AddTab((c1, t_old, r_old), Data)
+                    Data.tab.AddTab((c2, t1, r1), Data)
+                    
+                    print("(c2, t1, r1) = ", c2, t1, r1)
+                    print("Performed NULL SWAP operation")
+                    
+                    Accepted = True
+                    
+                elif not Data.tab.CheckTab((c1, t1, r1)):
+                    Data.timetable[(c1, t_old, r_old)] = 0
+                    Data.timetable[(c1, t1, r1)] = 1     
+                    
+                    Data.sol[c1][c1_index] = (t1, r1)
+                    
+                    Data.tab.AddTab((c1, t_old, r_old), Data)
+                    
+                    print("(c1, t1, r1) = ", c1, t1, r1)
+                    print("Performed MOVE operation")
+                    
+                    Accepted = True
+                    
+                else:
+                    print("(c1, t_old, r_old) = ", c1, t_old, r_old)
+                    print("(c2, t1, r1) = ", c2, t1, r1)
+                    print(ObjectiveList[Obj_index])
+                    print("Proposed a TABOO move, recoursing to a different entry")
+            
+            Obj_index = Obj_index + 1
         
-        Obj_index = Obj_index + 1
-    
-    print("Best Objective = ", datau.BestObj)    
-    print("Current Objective = ", CurrentObj)   
+        print("Best Objective = ", Data.BestObj)    
+        print("Current Objective = ", CurrentObj)   
     return CurrentObj, Iteration
             
-def BasicSwap(datau, CurrentObj, Iteration):
+def BasicSwap(Data, CurrentObj, Iteration):
     
     #Initiate the c1 candidate list
-    c1list = list(range(0, datau.Courses_max))
+    c1list = list(range(0, Data.Courses_max))
     ObjectiveList = []
     FeasMax = 30
     FeasCount = 0
@@ -194,7 +241,7 @@ def BasicSwap(datau, CurrentObj, Iteration):
     
     #Choose the lecture in the sol dictionary that will be assessed
     
-    c1_lectures = list(enumerate(datau.sol[c1]))
+    c1_lectures = list(enumerate(Data.sol[c1]))
     local_index = random.randint(0, len(c1_lectures)-1)
     c1_index, (t_old, r_old) = c1_lectures[local_index]
     
@@ -205,10 +252,10 @@ def BasicSwap(datau, CurrentObj, Iteration):
     
     print("(c1, t_old, r_old) = ", c1, t_old, r_old)
         
-    Possibilities = list(product(list(range(datau.total_timeslots)), list(range(datau.rooms_max))))
+    Possibilities = list(product(list(range(Data.total_timeslots)), list(range(Data.rooms_max))))
     
     for t, r in Possibilities:
-        if datau.tab.CheckTab((c1, t, r, datau)):
+        if Data.tab.CheckTab((c1, t, r)):
             del Possibilities[Possibilities.index((t, r))]
     
     while len(Possibilities) != 0 and FeasCount != FeasMax:
@@ -220,93 +267,106 @@ def BasicSwap(datau, CurrentObj, Iteration):
         
         #Check if a course already exists in the target room durng timeslot t1
         c2Null = True
-        for c in range(datau.Courses_max):
-            if datau.timetable[(c, t1, r1)] != 0:
+        for c in range(Data.Courses_max):
+            if Data.timetable[(c, t1, r1)] != 0:
                 c2Null = False
                 c2 = c
         
         if c2Null == False and c1Null == False:
-            datau.timetable[(c1, t_old, r_old)] = 0
-            datau.timetable[(c2, t1, r1)] = 0
+            Data.timetable[(c1, t_old, r_old)] = 0
+            Data.timetable[(c2, t1, r1)] = 0
             
             #Check the feasibility of the moves
-            if Feasibility_Check(c1, t1, r1, datau) and Feasibility_Check(c2, t_old, r_old, datau):
+            if Feasibility_Check(c1, t1, r1, Data) and Feasibility_Check(c2, t_old, r_old, Data):
                 FeasCount = FeasCount + 1
                 
-                datau.timetable[(c1, t_old, r_old)] = 1
-                datau.timetable[(c2, t1, r1)] = 1
+                Data.timetable[(c1, t_old, r_old)] = 1
+                Data.timetable[(c2, t1, r1)] = 1
                 
                 #Calculate the provisional objective
-                Obj = Set_obj_delta(datau, ((c2, t1, r1),(c2, t_old, r_old)), ((c1, t_old, r_old),(c1, t1, r1)))  
+                Obj = Set_obj_delta(Data, ((c2, t1, r1),(c2, t_old, r_old)), ((c1, t_old, r_old),(c1, t1, r1)))  
                 ObjectiveList.append((Obj, t1, r1, c2Null, c2))
                 
             else:
-                datau.timetable[(c1, t_old, r_old)] = 1
-                datau.timetable[(c2, t1, r1)] = 1
+                Data.timetable[(c1, t_old, r_old)] = 1
+                Data.timetable[(c2, t1, r1)] = 1
                 
         elif c2Null == False and c1Null == True:
-            datau.timetable[(c2, t1, r1)] = 0
+            Data.timetable[(c2, t1, r1)] = 0
             
             #Check the feasibility of the moves
-            if Feasibility_Check(c1, t1, r1, datau):
+            if Feasibility_Check(c1, t1, r1, Data):
                 FeasCount = FeasCount + 1
                 
-                datau.timetable[(c2, t1, r1)] = 1
+                Data.timetable[(c2, t1, r1)] = 1
                 
                 #Calculate the provisional objective
-                Obj = Set_obj_delta(datau, ((c2, t1, r1),(c2, t_old, r_old)), ((c1, t_old, r_old),(c1, t1, r1)))  
+                Obj = Set_obj_delta(Data, ((c2, t1, r1),(c2, t_old, r_old)), ((c1, t_old, r_old),(c1, t1, r1)))  
                 ObjectiveList.append((Obj, t1, r1, c2Null, c2))
                 
             else:
-                datau.timetable[(c1, t_old, r_old)] = 1
-                datau.timetable[(c2, t1, r1)] = 1
+                Data.timetable[(c2, t1, r1)] = 1
             
         else:
-            if Feasibility_Check(c1, t1, r1, datau):
+            if Feasibility_Check(c1, t1, r1, Data):
                 FeasCount = FeasCount + 1
                 
                 #Calculate the provisional objective
-                Obj = Set_obj_delta(datau, ((c1, t_old, r_old),(c1, None, None)), ((c1, None, None),(c1, t1, r1)))
+                Obj = Set_obj_delta(Data, ((c1, t_old, r_old),(c1, None, None)), ((c1, None, None),(c1, t1, r1)))
                 ObjectiveList.append((Obj, t1, r1, c2Null, None))
-                        
-    #Perform the best swap discovered
-    ObjectiveList.sort(key=lambda elem: elem[0])
-    CurrentObj, t1, r1, c2Null, c2 = ObjectiveList[0]
         
-    if not c2Null:
-        datau.timetable[(c1, t_old, r_old)] = 0
-        datau.timetable[(c2, t1, r1)] = 0
-        datau.timetable[(c1, t1, r1)] = 1
-        datau.timetable[(c2, t_old, r_old)] = 1
-        datau.sol[c1][c1_index] = (t1, r1)
+    if len(ObjectiveList) == 0:
+        print("No feasible solutions found")
         
-        datau.sol[c2][(datau.sol[c2]).index((t1, r1))] = (t_old, r_old)
+    else:                  
+        #Perform the best swap discovered
+        ObjectiveList.sort(key=lambda elem: elem[0])
+        CurrentObj, t1, r1, c2Null, c2 = ObjectiveList[0]
+            
+        if not c2Null and not c1Null:
+            Data.timetable[(c1, t_old, r_old)] = 0
+            Data.timetable[(c2, t1, r1)] = 0
+            Data.timetable[(c1, t1, r1)] = 1
+            Data.timetable[(c2, t_old, r_old)] = 1
+            
+            Data.sol[c1][c1_index] = (t1, r1)
+            Data.sol[c2][(Data.sol[c2]).index((t1, r1))] = (t_old, r_old)
+            
+            Data.tab.AddTab((c1, t_old, r_old), Data)
+            Data.tab.AddTab((c2, t1, r1), Data)
+            
+            print("(c2, t1, r1) = ", c2, t1, r1)
+            print("Performed STANDARD SWAP operation")
+            
+        elif not c2Null and c1Null:
+            Data.timetable[(c2, t1, r1)] = 0
+            Data.timetable[(c1, t1, r1)] = 1
+            
+            Data.sol[c1][c1_index] = (t1, r1)
+            Data.sol[c2][(Data.sol[c2]).index((t1, r1))] = (t_old, r_old)
+            
+            Data.tab.AddTab((c1, t_old, r_old), Data)
+            Data.tab.AddTab((c2, t1, r1), Data)
+            
+            print("(c2, t1, r1) = ", c2, t1, r1)
+            print("Performed NULL SWAP operation")
+            
+        else:
+            Data.timetable[(c1, t_old, r_old)] = 0
+            Data.timetable[(c1, t1, r1)] = 1     
+            
+            Data.sol[c1][c1_index] = (t1, r1)
+            
+            Data.tab.AddTab((c1, t_old, r_old), Data)
+            
+            print("(c1, t1, r1) = ", c1, t1, r1)
+            print("Performed MOVE operation")
         
-        datau.tab.AddTab((c2, t_old, r_old), datau)
-        datau.tab.AddTab((c1, t1, r1), datau)
-        
-        print("(c2, t1, r1) = ", c2, t1, r1)
-        print("Performed SWAP operation")
-    
-    else:
-        datau.timetable[(c1, t_old, r_old)] = 0
-        datau.timetable[(c1, t1, r1)] = 1     
-        datau.sol[c1][c1_index] = (t1, r1)
-        
-        datau.tab.AddTab((c1, t1, r1), datau)
-        
-        print("(c1, t1, r1) = ", c1, t1, r1)
-        print("Performed MOVE operation")
-        
-    if CurrentObj < datau.BestObj:
-        print("NEW BEST!")
-        datau.BestObj = CurrentObj
-        datau.BestSol = copy.deepcopy(datau.sol)
-    else:
-        print("Kept previous objective")
-    
-    print("Best Objective = ", datau.BestObj)    
-    print("Current Objective = ", CurrentObj)   
+        Data.BestObj = CurrentObj
+        Data.BestSol = copy.deepcopy(Data.sol)
+                
+        print("Best Objective = ", Data.BestObj)    
+        print("Current Objective = ", CurrentObj)   
     
     return CurrentObj, Iteration            
             

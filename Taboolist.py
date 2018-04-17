@@ -17,6 +17,11 @@ class Taboo:
                 
     def CheckTab(self,place):
        return place in self.TL
+   
+    def RemTab(self,place1, place2):
+        self.TL.remove(place1)
+        self.TIL.remove(place2)
+        
 
 
 class Qua:
@@ -27,12 +32,12 @@ class Qua:
         self.a = a
 
     def AddQua(self, n1, n2):
-        if not self.QL.__contains__((n1,n2)):
-            self.QL.append((n1,n2))
+        if not self.QL.__contains__(n1):
+            self.QL.append(n1)
             self.IL.append(n2)
 
-    def RemQua(self, place1, place2, place3):
-        self.QL.remove((place1,place2))
+    def RemQua(self, place1, place3):
+        self.QL.remove(place1)
         self.IL.remove(place3)
 
 
@@ -42,14 +47,14 @@ class Diff:
 
     def __init__(self, a):
         self.a = a
-
+    
     def AddObj(self, num):
         if len(self.DL) < self.a:
             self.DL.append(num)
         else:
             self.DL.pop(0)
             self.DL.append(num)
-        self.Av = sum(self.DL) / float(len(self.DL))
+        self.Av = sum(self.DL) / float(len(self.DL))    
         
         
         
