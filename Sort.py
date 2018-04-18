@@ -56,14 +56,26 @@ def SortTimeDomain(data,k):
             val=i
         else:
             break
-    return [A[i][1] for i in range(0,val+1)]'''
+    return [A[i][1] for i in range(0,val+1)]
 
 def SortBoth(data):
     A1=[0 for c in range(data.Courses_max)]
     for c in (data.C_q[q]):
         A1[c] = (data.room[c] + data.time1[c] ,c)
     A1.sort(reverse=True)
-    return [i[1] for i in A1] 
+    return [i[1] for i in A1] '''
+
+def SortBoth(data):
+    A=[0 for c in range(data.Courses_max)]
+    V_trc = [[[0 for c in range(data.Courses_max)] for r in range(data.rooms_max)] for t in range(data.total_timeslots)] 
+    for t in range(data.total_timeslots): 
+        for r in range(data.rooms_max):
+            for c in range(data.Courses_max):
+                V_trc[t][r][c] = max (0, (data.timetable[(c,t,r)]*data.S_c[c] - data.C_r[r]))
+    for c in range(data.Courses_max):
+        A[c] = (sum(V_trc[t][r][c] for t in range(data.total_timeslots) for r in range(data.rooms_max))+data.P_c[c] + data.Workingdays_c[c] + data.Unplanned_c[c],c)
+    A.sort(reverse=True)
+    return [i[1] for i in A]
 
 def SortChiComplexity(data,n2):
     q,w,e = n2
@@ -79,3 +91,12 @@ def SortChiComplexity(data,n2):
     c= a-b
     #print('penalty of', q, '=', b)
     return b
+
+def ComputeWorst(data):
+    #True if the worst is time
+    R= sum(data.room[c][0] for c in range(data.Courses_max))
+    T = sum(data.time1[c][0] for c in range(data.Courses_max))
+    if T>R:
+        return True
+    else:
+        return False

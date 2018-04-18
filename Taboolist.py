@@ -49,17 +49,24 @@ class Diff:
         self.a = a
     
     def AddObj(self, num):
-        if len(self.DL) < self.a:
+        if len(self.DL) < 30:
             self.DL.append(num)
         else:
             self.DL.pop(0)
             self.DL.append(num)
+        #print(self.DL,self.Av)
         self.Av = sum(self.DL) / float(len(self.DL))    
-        
-        
-        
-#if len(self.TL)<self.a:
-#            self.TL.append(place)
-#       else:
-#            self.TL.pop(0)
-#            self.TL.append(place)'''#
+    def Flat(self, d):
+        coun=0
+        k= len(self.DL)-1
+        while k>=0:
+            if self.DL[k] >= 0:
+                coun=coun+1
+            else:
+                coun=0
+                return False
+            if coun==10:
+                return True
+            else:
+                k=k-1
+
