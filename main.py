@@ -11,7 +11,7 @@ from TimeslotSwapPrep import TimeslotSwapPrep
 from SwapChoice import *
 import math
 
-def output(PeraFile, params, CurrentObj, Iteration):
+def output(PeraFile, params, CurrentObj, Iteration,InitialObj):
     import datetime, os
     Set = 'Test02'
     Alpha = params['Alpha']
@@ -47,17 +47,16 @@ PeraFile = "TestCasesAdvancedSwap"
 #while True:   
 verystart=time.time()
 
-DIR = "C:/Users/james.david/Desktop/Research/02_Denmark/01_DTU - Industrial Engineering Management/Semesters/Winter 2018/42137 - Optimization using Metaheuristics/00_Project/Test Data/Test02/"
-
+DIR = "Data/Test11/"
 files = file_names(DIR)
 datau = Data(read_file(DIR,files))
 
 Set_params(datau)
 InitPop_roomsVsStudents(datau)
-print("Initial Objective = ", Set_obj(datau, datau.timetable))
+print("Initial Objective = ", Set_obj(datau))
 InitPop(datau)
 
-CurrentObj = Set_obj(datau,datau.timetable)
+CurrentObj = Set_obj(datau)
 InitialObj = CurrentObj
 datau.BestObj = 9999999
 print("Secondary Objective = ", CurrentObj)
@@ -73,24 +72,25 @@ for i in datau.sol.keys():
         except:
             pass
 
-while (time.time()- verystart) <= 500:
+while (time.time()- verystart) <= 16:
     start = time.time()
     Iteration = Iteration + 1
-    print("ITERATION = ", Iteration)
+    #print("ITERATION = ", Iteration)
     
     TimePenalty, RoomPenalty = ComputeWorst(datau)
-    print("Time Penalty = {:.4}".format(TimePenalty))
-    print("Room Penalty = {}".format(RoomPenalty))
+
+    #print("Time Penalty = {:.4}".format(TimePenalty))
+    #print("Room Penalty = {}".format(RoomPenalty))
     
     if TimePenalty > RoomPenalty:
         CurrentObj = TimeslotSwapPrep(datau, CurrentObj, Iteration)
     else:
         CurrentObj = RoomSwapPrep(datau, CurrentObj, Iteration)
     
-    print("Iteration Runtime: {:.5} s\n".format(time.time()-start))
-    print("Total Runtime: {:.5} s\n".format(time.time()-verystart))
+    #print("Iteration Runtime: {:.5} s\n".format(time.time()-start))
+    #print("Total Runtime: {:.5} s\n".format(time.time()-verystart))
        
-output(PeraFile, datau.params, datau.BestObj, Iteration)  
+output(PeraFile, datau.params,CurrentObj, datau.BestObj, Iteration)
 
 for i in datau.sol.keys():
     for j in datau.sol[i]:

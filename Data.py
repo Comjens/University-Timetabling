@@ -1,6 +1,6 @@
 from Parameters import Alpha, Delta
 from Taboolist import Taboo, Qua, Diff
-
+import numpy as np
 
 class Data:
     Courses_max = None
@@ -57,10 +57,10 @@ class Data:
         
 
         # Solution matrix
-        self.timetable = {(course, timeslot, room):0
-                          for room in range(self.rooms_max)
-                          for timeslot in range(self.total_timeslots)
-                          for course in range(self.Courses_max )}
+        self.timetable = np.array([[[0
+                          for room in range(self.rooms_max)]
+                          for timeslot in range(self.total_timeslots)]
+                          for course in range(self.Courses_max )])
         self.sol = {Course: [(None, None) for i in range(int(self.courses[Course+1][2]))]
                     for Course in range(self.Courses_max)}
         self.BestSol = {Course: [(None, None) for i in range(int(self.courses[Course + 1][2]))]

@@ -58,7 +58,7 @@ def Set_obj(data):
     obj =     sum(P_c[c] for c in range(data.Courses_max)) \
     + np.sum(V_tr) + 2 * np.sum(A_qt) + 10 * np.sum(Unplanned_c) + 5 * np.sum(Workingdays_c)
 
-    return obj,sum(P_c[c] for c in range(data.Courses_max)),np.sum(V_tr), np.sum(A_qt),np.sum(Unplanned_c),np.sum(Workingdays_c)
+    return obj#,sum(P_c[c] for c in range(data.Courses_max)),np.sum(V_tr), np.sum(A_qt),np.sum(Unplanned_c),np.sum(Workingdays_c)
 
     #====================================================================================================
 
