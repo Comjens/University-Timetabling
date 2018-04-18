@@ -10,10 +10,6 @@ import random
  
 def TimeslotSwapPrep(Data, CurrentObj, Iteration):
     Possible = True
-    print("TIMESLOT SWAP")
-       
-        #Determine the c1 candidate list
-    c1list = []
     c1list = SortRoomDomain(Data, 1)
     
     QL = Data.qua.QL
@@ -21,9 +17,6 @@ def TimeslotSwapPrep(Data, CurrentObj, Iteration):
     TL = Data.tab.TL
     TIL = Data.tab.TIL
     
-    print("QL = ", QL)
-
-    #Update the quarantine list
     k = len(IL) - 1
     while k >= 0:
         if IL[k] == Iteration:
@@ -58,9 +51,7 @@ def TimeslotSwapPrep(Data, CurrentObj, Iteration):
     else:
         c1Null = False
     
-     #Create a candidate list for timeslots based on the course availability Fct and the conflict matrix Chi_cc
-    #This section passively ensures timeslot feasibility
-    tlist = []      
+    tlist = []
     for t in range(Data.total_timeslots):
         
         Addition = True
@@ -77,8 +68,6 @@ def TimeslotSwapPrep(Data, CurrentObj, Iteration):
         if Addition == True:
             tlist.append(t)
             
-    #Create a candidate list of rooms based on other c1 placements, the room capacities, and the tabu list
-    #This section passively ensures room feasibility
     rlist = []
     rPriorityList = []
     
@@ -94,20 +83,15 @@ def TimeslotSwapPrep(Data, CurrentObj, Iteration):
                     del rlist[rlist.index(r)]
            
     if len(tlist) == 0:
-        print("Course ", c1, " cannot be moved to any other timeslot")
         #PLACE THIS COURSE ON A COURSE QUARANTINE LIST
         Possible = False
     
     if len(rPriorityList) == 0 and len(rlist) == 0:
-        print("c1 = ", c1, " has no possible rooms with which to move")
         Possible = False
     
     if Possible:
         CurrentObj, Accepted = TimeslotSwapSelection(Data, rPriorityList, rlist, tlist, c1, c1_index, c1Null, CurrentObj, t_old, r_old)
         if Accepted == False:
-            print("Could not move c1 = ", c1)
             Data.qua.AddQua(c1, Iteration + Data.params['Gamma'])
-    else:
-        print("Could not move c1 = ", c1)
-   
+
     return CurrentObj

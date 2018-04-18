@@ -97,8 +97,6 @@ initList = list(itertools.product(*a))
 
 
 PeraFile = "TestCases"
-print('HI?')
-
 def Optimize(que, initList):
     while True:
         try:
@@ -109,17 +107,12 @@ def Optimize(que, initList):
             print("Current Working set: {}".format(params['Set']))
             files = file_names(DIR)
             datau = Data(read_file(DIR, files))
-
             Set_params(datau)
             InitPop_roomsVsStudents(datau)
-            print("Initial Objective = ", Set_obj(datau))
             InitPop(datau)
-
             CurrentObj = Set_obj(datau)
             InitialObj = CurrentObj
             datau.BestObj = 9999999
-            print("Secondary Objective = ", CurrentObj)
-
             Iteration = 0
             Pertu = False
             pp=0
@@ -128,11 +121,7 @@ def Optimize(que, initList):
             while (time.time() - verystart) <= 300:
                 start = time.time()
                 Iteration = Iteration + 1
-                print("ITERATION = ", Iteration)
-
                 TimePenalty, RoomPenalty = ComputeWorst(datau)
-                print("Time Penalty = {:.4}".format(TimePenalty))
-                print("Room Penalty = {}".format(RoomPenalty))
                 PrevObj = Set_obj(datau)
                 if CurrentObj > data.params['K'] + datau.BestObj and Pertu == False:
                     CurrentObj = Pert(datau)
@@ -146,16 +135,10 @@ def Optimize(que, initList):
                         CurrentObj = RoomSwapPrep(datau, CurrentObj, Iteration)
                 datau.diff.AddObj(CurrentObj-PrevObj)
                 #Pertu = datau.diff.Flat(CurrentObj-PrevObj)
-                print(Pertu, CurrentObj-PrevObj, datau.diff.Av )
-
-                print("Iteration Runtime: {:.5} s\n".format(time.time() - start))
-                print("Total Runtime: {:.5} s\n".format(time.time() - verystart))
-
 
             que.put((params,  datau.BestObj, Iteration,InitialObj,pp))
         except Exception as e:
             que.put(e)
-            print(e)
             pass
 
 
@@ -165,7 +148,7 @@ it = 1
 while True:
     message = q.get()
     if isinstance(message, Exception):
-        print(message,"here")
+        print(message)
     else:#(params,  datau.BestObj, Iteration,InitialObj,pp)
         #output(PeraFile, params, BestObj, Iteration, InitialObj, pp)
         output(PeraFile, message[0], message[1], message[2],message[3],message[4])

@@ -23,7 +23,6 @@ def InitPop(data):
             c1 = Sorted_list_c[-1][1]
             # courses_index = random.randint(0, len(courses) - 1)
         except Exception as e:
-            print(e)
             break
 
         # Assemble the list of indices corresponding to non-populated entries in the solution dictionary
@@ -84,7 +83,6 @@ def InitPop_roomsVsStudents(data):
         try:
             c1 = Sorted_list_c[-1][1]
         except Exception as e:
-            print(e)
             break
         np_indexlist = []
         CountNP = 0
