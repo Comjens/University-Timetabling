@@ -64,6 +64,7 @@ if __name__ == "__main__":
     from RoomSwapPrep import RoomSwapPrep
     from TimeslotSwapPrep import TimeslotSwapPrep
     from SwapChoice import *
+    from Perturbation import *
     import math
     import multiprocessing
 
@@ -109,7 +110,7 @@ if __name__ == "__main__":
                 datau = Data(read_file(DIR, files))
     
                 Set_params(datau)
-                #InitPop_roomsVsStudents(datau)
+                InitPop_roomsVsStudents(datau)
                 print("Initial Objective = ", Set_obj(datau))
                 InitPop(datau)
     
