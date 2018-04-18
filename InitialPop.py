@@ -13,20 +13,14 @@ def InitPop(data):
     from itertools import product
     from FeasibilityCheck import Feasibility_Check
     Placements = 0
-    courses = list(range(0, data.Courses_max))
 
     MinCriteria = min(data.rooms_max * data.total_timeslots, sum([len(data.sol[i]) for i in data.sol]))
     Sorted_list_c = [(sum(data.F_ct[c]), c) for c in range(data.Courses_max)]
     Sorted_list_c.sort()
-    #Sorted_list_t = [(sum([i[t] for i in data.F_ct]), t) for t in range(data.total_timeslots)]
-    #Sorted_list_t.sort()
     while Placements < data.params['Initiate'] * MinCriteria:
-
         # Define the initial entry'
         try:
-
             c1 = Sorted_list_c[-1][1]
-
             # courses_index = random.randint(0, len(courses) - 1)
         except Exception as e:
             print(e)
@@ -76,34 +70,22 @@ def InitPop(data):
                     
 def InitPop_roomsVsStudents(data):
     import random
-    from itertools import product
     from FeasibilityCheck import Feasibility_Check
     Placements = 0
-    courses = list(range(0, data.Courses_max))
     times =[i for i in range(data.total_timeslots)]
-    #print(times)
-    MinCriteria = min(data.rooms_max * data.total_timeslots, sum([len(data.sol[i]) for i in data.sol]))
     Sorted_list_room = [(data.C_r[r], r) for r in range(data.rooms_max)]
     Sorted_list_c = [(data.S_c[c], c) for c in range(data.Courses_max)]
     Sorted_list_room.sort()
     Sorted_list_c.sort()
-    # Sorted_list_t = [(sum([
-    # Sorted_list_t = [(sum([i[t] for i in data.F_ct]), t) for t in range(data.total_timeslots)]
-    # Sorted_list_t.sort()
+
     start = time.time()
     while time.time()-start < data.params['sek']:
 
-        # Define the initial entry'
         try:
-
             c1 = Sorted_list_c[-1][1]
-
-            # courses_index = random.randint(0, len(courses) - 1)
         except Exception as e:
             print(e)
             break
-
-        # Assemble the list of indices corresponding to non-populated entries in the solution dictionary
         np_indexlist = []
         CountNP = 0
         for i, j in enumerate(data.sol[c1]):
@@ -120,25 +102,12 @@ def InitPop_roomsVsStudents(data):
             np = random.randint(0, len(np_indexlist) - 1)
             c1_index = np_indexlist[np]
             del np_indexlist[np]
-
-
             #Possibilities = list(product(list(range(data.total_timeslots)), list(range(data.rooms_max))))
-
             Feasibility = False
-
             # Probe to see where this lecture may be placed
             for i,r1 in reversed(Sorted_list_room):
 
                 for t1 in times:
-
-                    # If we've iterated through all possibilities and the course cannot be placed, move on
-
-
-                    # Randomly generate the timeslot and room, then remove this from the Possibilities list
-                    #p_index = random.randint(0, len(Possibilities) - 1)
-                    #t1, r1 = Possibilities[p_index]
-                    #del Possibilities[p_index]
-
                     # Perform a feasibility check, if feasible, schedule the course
                     Feasibility = Feasibility_Check(c1, t1, r1, data)
 
@@ -152,4 +121,3 @@ def InitPop_roomsVsStudents(data):
                     i+=1
                 if Feasibility == True or time.time()-start > data.params['sek']:
                     break
-
