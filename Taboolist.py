@@ -11,10 +11,8 @@ class Taboo:
         n2=SortChiComplexity(data,place)
         if not self.TL.__contains__(place):
             self.TL.append(place)
-            self.TIL.append(n2+data.params['Delta'])
-        else:
-            print("MISTAKE!,THIS WAS ALREADY IN TABU:",place)
-                
+            self.TIL.append(n2*data.params['Delta'] + 10)
+
     def CheckTab(self,place):
        return place in self.TL
    
@@ -54,7 +52,7 @@ class Diff:
         else:
             self.DL.pop(0)
             self.DL.append(num)
-        #print(self.DL,self.Av)
+
         self.Av = sum(self.DL) / float(len(self.DL))    
     def Flat(self, d):
         coun=0

@@ -169,7 +169,7 @@ def Pert(datau):
                     #print('non swappiamo')
 
 
-    return Set_obj(datau,datau.timetable)
+    return Set_obj(datau)
 
                 
 '''for i in datau.sol.keys():
