@@ -55,10 +55,10 @@ while True:
     
     Set_params(datau)
     InitPop_roomsVsStudents(datau)
-    print("Initial Objective = ", Set_obj(datau, datau.timetable))
+    print("Initial Objective = ", Set_obj(datau))
     InitPop(datau)
     
-    CurrentObj = Set_obj(datau,datau.timetable)
+    CurrentObj = Set_obj(datau)
     InitialObj = CurrentObj
     datau.BestObj = 9999999
     print("Secondary Objective = ", CurrentObj)
@@ -77,7 +77,7 @@ while True:
         TimePenalty, RoomPenalty = ComputeWorst(datau)
         print("Time Penalty = {:.4}".format(TimePenalty))
         print("Room Penalty = {}".format(RoomPenalty))
-        PrevObj = Set_obj(datau,datau.timetable)
+        PrevObj = Set_obj(datau)
         
         if CurrentObj > 50 + datau.BestObj and Pertu == False:
             CurrentObj = Pert(datau)

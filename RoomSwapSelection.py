@@ -106,9 +106,6 @@ def RoomSwapSelection(Data, rPriorityList, rlist, tlist, c1, c1_index, c1Null, C
                                 break 
                         else:
                             Data.timetable[(c1, t_old, r_old)] = 1
-                    else:
-
-                else:
     
     Accepted = False
     if len(ObjectiveList) == 0:

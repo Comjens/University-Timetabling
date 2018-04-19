@@ -37,18 +37,18 @@ def output(PeraFile, params, BestObj, Iteration,InitialObj,pp):
     #    infile.write("{:2},{},{},{},{},{},{},{}".format(datetime.datetime.now().isoformat(),alpha,beta,gamma,sigma,epsilon,init,data.CurrentObj,Iteration)
     if not os.path.isfile(PeraFile + ".csv"):
         with open(PeraFile + ".csv", mode='w+') as infile:  # 2018-04-14T16:28:20.102387
-            infile.write("YYYY-MM-DDTHH:MM:SS,Set,Alpha,Beta,Gamma,Delta,Sigma,Epsilon,Initiate,InitialObj,BestObj,Iteration, Perturbations")
+            infile.write("YYYY-MM-DDTHH:MM:SS,Set,Alpha,Beta,Gamma,Delta,Sigma,Epsilon,Initiate,InitialObj,BestObj,Iteration, Perturbations,k")
             infile.write(
-                "\n{},{},{},{},{},{},{},{},{},{},{},{},{}".format(datetime.datetime.now().isoformat(), Set, Alpha, Beta,
+                "\n{},{},{},{},{},{},{},{},{},{},{},{},{},{}".format(datetime.datetime.now().isoformat(), Set, Alpha, Beta,
                                                             Gamma, Sigma, Delta, Epsilon, Initiate, InitialObj, BestObj,
-                                                            Iteration, pp))
+                                                            Iteration, pp,K))
 
     else:  # else it exists so append without writing the header
         with open(PeraFile + ".csv", mode='a') as infile:  # 2018-04-14T16:28:20.102387
             infile.write(
-                "\n{},{},{},{},{},{},{},{},{},{},{},{},{}".format(datetime.datetime.now().isoformat(), Set, Alpha, Beta,
+                "\n{},{},{},{},{},{},{},{},{},{},{},{},{},{}".format(datetime.datetime.now().isoformat(), Set, Alpha, Beta,
                                                                 Gamma, Delta, Sigma, Epsilon, Initiate, InitialObj, BestObj,
-                                                                Iteration,pp))
+                                                                Iteration,pp,K))
 
 import itertools
 import random
@@ -71,9 +71,8 @@ import multiprocessing
 
 m = Manager()
 q = m.Queue()
-cores = 4#cpu_count()
+cores = math.floor(cpu_count()/1.1)
 
-DIR = "Data/Test02/"
 
 Setn = ["Data/Test{:02}/".format(i) for i in range(1, 14)]
 
@@ -105,8 +104,7 @@ def Optimize(que, initList):
             files = file_names(params['Set'])
             data = Data(read_file(params['Set'], files), params)
             print("Current Working set: {}".format(params['Set']))
-            files = file_names(DIR)
-            datau = Data(read_file(DIR, files))
+            datau=data
             Set_params(datau)
             InitPop_roomsVsStudents(datau)
             InitPop(datau)
